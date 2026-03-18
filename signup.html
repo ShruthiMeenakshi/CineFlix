@@ -60,7 +60,8 @@
                 }
                 localStorage.setItem('api_token', data.token);
                 localStorage.setItem('username', data.username);
-                window.location.href = 'profile.html';
+                document.getElementById('status').textContent = 'Account created — redirecting...';
+                setTimeout(() => window.location.href = 'home.html', 800);
             } catch (err) {
                 document.getElementById('status').textContent = `Network/error: ${err.message}`;
             }

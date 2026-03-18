@@ -47,6 +47,10 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Signup failed", "message", e.getMessage()));
         }
     }
+    @GetMapping("/test")
+public Map<String, String> test() {
+    return Map.of("message", "Auth controller working");
+}
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader(value = "Authorization", required = false) String auth) {
