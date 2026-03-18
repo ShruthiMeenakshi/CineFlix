@@ -297,8 +297,8 @@ export default function Home() {
 
       {/* Modal */}
       {modalOpen && modalData && (
-        <div id="movieModal" className="fixed inset-0 bg-black/70 flex items-center justify-center p-4">
-          <div className="bg-cineflix-dark rounded-lg max-w-2xl w-full overflow-auto">
+        <div id="movieModal" className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[9999]">
+          <div className="bg-cineflix-dark rounded-lg max-w-2xl w-full overflow-auto relative z-50">
             <div className="p-4 flex justify-end"><button onClick={() => setModalOpen(false)} className="text-gray-300">Close</button></div>
             <div id="modalContent" className="p-4 text-gray-200">
               <div className="md:flex gap-4">
