@@ -6,6 +6,7 @@ import Avengers from './pages/Avengers.jsx';
 import News from './pages/News.jsx';
 import MovieDetails from './pages/MovieDetails.jsx';
 import Tvshows from './pages/Tvshows.jsx';
+import MyList from './pages/MyList.jsx';
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/avengers" element={<Avengers />} />
         <Route path="/news" element={<News />} />
         <Route path="/movie/:title" element={<MovieDetails />} />
+        <Route path="/list" element={<MyList />} />
       </Routes>
     </div>
   );

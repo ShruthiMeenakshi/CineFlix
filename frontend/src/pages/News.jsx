@@ -11,10 +11,10 @@ export default function News() {
           <a href="#" className="text-3xl font-bold text-movieshere-red">MOVIES<span className="text-white">HERE</span></a>
           <div className="hidden md:flex ml-8 space-x-6">
             <Link to="/" className="hover:text-gray-300">Home</Link>
-            <a href="/Tvshows.html" className="hover:text-gray-300">TV Shows</a>
+            <Link to="/tvshows" className="hover:text-gray-300">TV Shows</Link>
             <Link to="/movies" className="hover:text-gray-300">Movies</Link>
             <Link to="/news" className="hover:text-gray-300">New & Popular</Link>
-            <a href="/list.html" className="hover:text-gray-300">My List</a>
+            <Link to="/list" className="hover:text-gray-300">My List</Link>
           </div>
         </div>
       </nav>

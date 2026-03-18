@@ -79,12 +79,16 @@ export default function Tvshows() {
             <h2 className="text-xl font-bold mb-4">Popular TV Shows</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {(posters.length ? posters.slice(0,6) : Array.from({length:6})).map((p, i) => (
-                <div key={i} className="group relative rounded overflow-hidden">
-                  <img src={posterOrPlaceholder(p, 'Popular')} alt={`Popular ${i}`} className="w-full h-40 md:h-56 object-cover transition-transform duration-300 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                    <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+                  <div key={i} className="group relative rounded overflow-hidden">
+                    <img src={posterOrPlaceholder(p, 'Popular')} alt={`Popular ${i}`} className="w-full h-40 md:h-56 object-cover transition-transform duration-300 group-hover:scale-105" />
+                    <div className="absolute top-2 right-2 z-20 flex space-x-2">
+                      <button onClick={(e) => { e.stopPropagation(); const obj = { poster: p || '', title: 'Unknown', id: encodeURIComponent(p || `popular-${i}`) }; import('../lib/myList').then(m => { m.toggleWishlist(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Wishlist"><i className="fas fa-bookmark"></i></button>
+                      <button onClick={(e) => { e.stopPropagation(); const obj = { poster: p || '', title: 'Unknown', id: encodeURIComponent(p || `popular-${i}`) }; import('../lib/myList').then(m => { m.toggleFavorite(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Favourite"><i className="fas fa-heart"></i></button>
+                    </div>
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                      <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+                    </div>
                   </div>
-                </div>
               ))}
             </div>
           </div>

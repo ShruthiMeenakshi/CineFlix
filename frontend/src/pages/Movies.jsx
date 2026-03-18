@@ -134,12 +134,16 @@ export default function Movies() {
             <div className="swiper-wrapper gap-5">
               {(posters.length ? posters.slice(0, 4) : [null, null, null, null]).map((p, i) => (
                 <div className="swiper-slide" key={i} style={{ width: 150 }}>
-                  <div className="movie-card relative rounded overflow-hidden h-full">
-                    <img src={p || 'https://via.placeholder.com/300x450?text=Movie'} alt={`Movie ${i}`} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                      <button className="play-button bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
-                    </div>
-                  </div>
+                      <div className="movie-card relative rounded overflow-hidden h-full">
+                        <img src={p || 'https://via.placeholder.com/300x450?text=Movie'} alt={`Movie ${i}`} className="w-full h-full object-cover" />
+                        <div className="absolute top-2 right-2 z-20 flex space-x-2">
+                          <button onClick={(e) => { e.stopPropagation(); const obj = { poster: p || '', title: 'Unknown', id: encodeURIComponent(p || `movie-${i}`) }; import('../lib/myList').then(m => { m.toggleWishlist(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Wishlist"><i className="fas fa-bookmark"></i></button>
+                          <button onClick={(e) => { e.stopPropagation(); const obj = { poster: p || '', title: 'Unknown', id: encodeURIComponent(p || `movie-${i}`) }; import('../lib/myList').then(m => { m.toggleFavorite(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Favourite"><i className="fas fa-heart"></i></button>
+                        </div>
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                          <button className="play-button bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
+                        </div>
+                      </div>
                 </div>
               ))}
             </div>

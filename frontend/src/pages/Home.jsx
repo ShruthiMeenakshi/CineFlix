@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toggleFavorite, toggleWishlist, isFavorite, isWishlisted } from '../lib/myList';
 
 const API_BASE_URL = 'http://localhost:8082/api/movies';
 
@@ -115,10 +116,18 @@ export default function Home() {
 
   function renderMovieCard(movie) {
     const poster = movie.Poster && movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x445?text=No+Poster';
+    const id = movie.imdbID;
+    const [favState, setFavState] = [isFavorite(id), isWishlisted(id)];
     return (
       <div key={`${movie.imdbID}-${movie.Year}`} className="bg-black/40 rounded overflow-hidden movie-card">
         <div className="relative group">
           <img src={poster} alt={movie.Title} className="w-full h-64 object-cover" loading="lazy" />
+
+          <div className="absolute top-2 right-2 flex space-x-2 z-20">
+            <button onClick={(e) => { e.stopPropagation(); toggleWishlist(movie); setTimeout(() => window.dispatchEvent(new Event('storage')), 50); }} className={`bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 ${isWishlisted(id) ? 'text-movieshere-red' : 'text-white'}`} title="Toggle wishlist"><i className="fas fa-bookmark"></i></button>
+            <button onClick={(e) => { e.stopPropagation(); toggleFavorite(movie); setTimeout(() => window.dispatchEvent(new Event('storage')), 50); }} className={`bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 ${isFavorite(id) ? 'text-movieshere-red' : 'text-white'}`} title="Toggle favourite"><i className="fas fa-heart"></i></button>
+          </div>
+
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-end p-3">
             <div className="w-full flex justify-between items-end">
               <button onClick={() => openDetails(movie.imdbID)} className="bg-movieshere-red text-white px-3 py-1 rounded opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-200"><i className="fas fa-play mr-2"></i>Play</button>
@@ -144,7 +153,7 @@ export default function Home() {
             <Link to="/movies" className="hover:text-gray-300">TV Shows</Link>
             <Link to="/movies" className="hover:text-gray-300">Movies</Link>
             <Link to="/news" className="hover:text-gray-300">New & Popular</Link>
-            <a href="/list.html" className="hover:text-gray-300">My List</a>
+            <Link to="/list" className="hover:text-gray-300">My List</Link>
           </div>
         </div>
         <div className="flex items-center space-x-4">
