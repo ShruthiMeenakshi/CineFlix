@@ -36,7 +36,7 @@ export async function cacheImage(url) {
     const img = new Image(); img.src = url; return;
   }
   try {
-    const cache = await caches.open('movieshere-images');
+    const cache = await caches.open('cineflix-images');
     const match = await cache.match(url);
     if (match) return; // already cached
     const res = await fetch(url, { mode: 'cors', cache: 'reload' });

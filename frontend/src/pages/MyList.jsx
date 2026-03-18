@@ -65,7 +65,7 @@ export default function MyList() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'movieshere-mylist.json';
+    a.download = 'cineflix-mylist.json';
     document.body.appendChild(a);
     a.click();
     a.remove();

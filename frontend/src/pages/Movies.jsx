@@ -4,7 +4,7 @@ import { fetchJsonWithCache, prefetchImages } from '../lib/apiCache';
 
 export default function Movies() {
   useEffect(() => {
-    document.title = 'Movies | MoviesHere';
+    document.title = 'Movies | CineFlix';
 
     // initial swiper init will be handled after posters are loaded
   }, []);
@@ -20,7 +20,7 @@ export default function Movies() {
         const url = 'http://localhost:8082/api/movies/random-posters?count=12';
         const data = await fetchJsonWithCache(url);
         if (Array.isArray(data) && data.length) {
-          const normalized = data.map((u, i) => ({ Poster: u, Title: `Poster ${i+1}`, imdbID: `poster-${i}` }));
+          const normalized = data.map((u, i) => ({ Poster: u, Title: `Poster ${i + 1}`, imdbID: `poster-${i}` }));
           setPosters(normalized);
           // prefetch images to warm browser cache + Cache Storage
           prefetchImages(normalized.map(n => n.Poster));
@@ -61,7 +61,7 @@ export default function Movies() {
         const res = await fetch('http://localhost:8082/api/movies/random-posters?count=12');
         const data = await res.json();
         if (Array.isArray(data) && data.length) {
-          const normalized = data.map((u, i) => ({ Poster: u, Title: `Poster ${i+1}`, imdbID: `poster-${i}` }));
+          const normalized = data.map((u, i) => ({ Poster: u, Title: `Poster ${i + 1}`, imdbID: `poster-${i}` }));
           setPosters(normalized);
           setTimeout(() => initSwipers(), 200);
         }
@@ -118,7 +118,7 @@ export default function Movies() {
 
       <nav className="fixed w-full z-50 bg-gradient-to-b from-black to-transparent px-4 md:px-12 py-4 flex justify-between items-center">
         <div className="flex items-center">
-          <a href="/" className="text-3xl font-bold text-movieshere-red hover:text-red-600 transition-colors duration-300">MOVIES<span className="text-white">HERE</span></a>
+          <a href="/" className="text-3xl font-bold text-cineflix-red hover:text-red-600 transition-colors duration-300">CineFlix</a>
           <div className="hidden md:flex ml-8 space-x-6">
             <Link to="/" className="hover:text-gray-300 transition-colors duration-300">Home</Link>
             <Link to="/tvshows" className="hover:text-gray-300 transition-colors duration-300">TV Shows</Link>
@@ -131,7 +131,7 @@ export default function Movies() {
           <div className="hidden md:block"><i className="fas fa-search hover:text-gray-300 cursor-pointer transition-colors duration-300"></i></div>
           <div className="hidden md:block"><i className="fas fa-bell hover:text-gray-300 cursor-pointer transition-colors duration-300"></i></div>
           <div className="flex items-center space-x-2 cursor-pointer group">
-            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-movieshere-red" />
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-cineflix-red" />
             <i className="fas fa-caret-down hover:text-gray-300 transition-colors duration-300"></i>
           </div>
         </div>
@@ -141,8 +141,8 @@ export default function Movies() {
         <h1 className="text-3xl md:text-4xl font-bold mb-8">Movies</h1>
 
         <div className="flex space-x-4 mb-8 overflow-x-auto pb-4">
-          {['All','Action','Comedy','Drama','Sci-Fi','Horror','Documentary'].map(cat => (
-            <button key={cat} onClick={() => fetchCategory(cat)} className={`category-btn whitespace-nowrap px-4 py-2 rounded-md ${activeCategory===cat ? 'bg-movieshere-red' : 'bg-movieshere-gray'} hover:opacity-90`}>{cat}</button>
+          {['All', 'Action', 'Comedy', 'Drama', 'Sci-Fi', 'Horror', 'Documentary'].map(cat => (
+            <button key={cat} onClick={() => fetchCategory(cat)} className={`category-btn whitespace-nowrap px-4 py-2 rounded-md ${activeCategory === cat ? 'bg-cineflix-red' : 'bg-cineflix-gray'} hover:opacity-90`}>{cat}</button>
           ))}
         </div>
 
@@ -152,7 +152,7 @@ export default function Movies() {
             <img src="https://image.tmdb.org/t/p/original/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" alt="The Batman" className="w-full h-64 md:h-96 object-cover rounded-lg transition-transform duration-500 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent rounded-lg"></div>
             <div className="absolute bottom-0 left-0 p-6">
-              <h3 className="text-2xl md:text-3xl font-bold mb-2 transition-all duration-300 group-hover:text-movieshere-red">The Batman</h3>
+              <h3 className="text-2xl md:text-3xl font-bold mb-2 transition-all duration-300 group-hover:text-cineflix-red">The Batman</h3>
               <p className="text-gray-300 mb-4 max-w-2xl transition-all duration-300 group-hover:text-white">When the Riddler, a sadistic serial killer, begins murdering key political figures in Gotham, Batman is forced to investigate the city's hidden corruption and question his family's involvement.</p>
               <div className="flex space-x-4">
                 <button className="bg-white text-black px-6 py-2 rounded flex items-center hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105"><i className="fas fa-play mr-2"></i> Play</button>
@@ -170,24 +170,67 @@ export default function Movies() {
               <div className="swiper-button-next-popular hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red"><i className="fas fa-chevron-right text-2xl"></i></div>
             </div>
           </div>
+        </div>
 
-          <div className="swiper-container popular-movies-slider">
-            <div className="swiper-wrapper gap-5">
-              {(posters.length ? posters.slice(0, 4) : [null, null, null, null]).map((p, i) => (
-                <div className="swiper-slide" key={i} style={{ width: 150 }}>
-                      <div className="movie-card relative rounded overflow-hidden h-full">
-                        <img src={p || 'https://via.placeholder.com/300x450?text=Movie'} alt={`Movie ${i}`} className="w-full h-full object-cover" />
-                        <div className="absolute top-2 right-2 z-20 flex space-x-2">
-                          <button onClick={(e) => { e.stopPropagation(); const obj = { poster: p || '', title: 'Unknown', id: encodeURIComponent(p || `movie-${i}`) }; import('../lib/myList').then(m => { m.toggleWishlist(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Wishlist"><i className="fas fa-bookmark"></i></button>
-                          <button onClick={(e) => { e.stopPropagation(); const obj = { poster: p || '', title: 'Unknown', id: encodeURIComponent(p || `movie-${i}`) }; import('../lib/myList').then(m => { m.toggleFavorite(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Favourite"><i className="fas fa-heart"></i></button>
-                        </div>
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                          <button className="play-button bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
-                        </div>
-                      </div>
+        <div className="swiper-container popular-movies-slider">
+          <div className="swiper-wrapper gap-5">
+            {(posters.length ? posters.slice(0, 4) : [null, null, null, null]).map((p, i) => (
+              <div className="swiper-slide" key={i} style={{ width: 150 }}>
+                <div className="movie-card relative rounded overflow-hidden h-full group">
+                  <img
+                    src={p || 'https://via.placeholder.com/300x450?text=Movie'}
+                    alt={`Movie ${i}`}
+                    className="w-full h-full object-cover"
+                  />
+
+                  <div className="absolute top-2 right-2 z-20 flex space-x-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const obj = {
+                          poster: p || '',
+                          title: 'Unknown',
+                          id: encodeURIComponent(p || `movie-${i}`)
+                        };
+                        import('../lib/myList').then(m => {
+                          m.toggleWishlist(obj);
+                          window.dispatchEvent(new Event('storage'));
+                        });
+                      }}
+                      className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white"
+                      title="Wishlist"
+                    >
+                      <i className="fas fa-bookmark"></i>
+                    </button>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const obj = {
+                          poster: p || '',
+                          title: 'Unknown',
+                          id: encodeURIComponent(p || `movie-${i}`)
+                        };
+                        import('../lib/myList').then(m => {
+                          m.toggleFavorite(obj);
+                          window.dispatchEvent(new Event('storage'));
+                        });
+                      }}
+                      className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white"
+                      title="Favourite"
+                    >
+                      <i className="fas fa-heart"></i>
+                    </button>
+                  </div>
+
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                    <button className="play-button bg-cineflix-red text-white px-4 py-2 rounded">
+                      <i className="fas fa-play"></i>
+                    </button>
+                  </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -233,21 +276,21 @@ export default function Movies() {
                 const title = p ? (p.Title || 'Unknown') : '';
                 const id = p ? (p.imdbID || p.id || `slide-${i}`) : `slide-${i}`;
                 return (
-                <div className="swiper-slide" key={i} style={{ width: 150 }}>
-                  <div className="movie-card relative rounded overflow-hidden h-full">
-                    <img src={posterUrl || 'https://via.placeholder.com/300x450?text=Movie'} alt={title || `Movie ${i}`} className="w-full h-full object-cover" />
-                    <div className="absolute top-2 right-2 z-20 flex space-x-2">
-                      <button onClick={(e) => { e.stopPropagation(); const obj = { poster: posterUrl || '', title, id }; import('../lib/myList').then(m => { m.toggleWishlist(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Wishlist"><i className="fas fa-bookmark"></i></button>
-                      <button onClick={(e) => { e.stopPropagation(); const obj = { poster: posterUrl || '', title, id }; import('../lib/myList').then(m => { m.toggleFavorite(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Favourite"><i className="fas fa-heart"></i></button>
-                    </div>
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                      <button className="play-button bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
+                  <div className="swiper-slide" key={i} style={{ width: 150 }}>
+                    <div className="movie-card relative rounded overflow-hidden h-full">
+                      <img src={posterUrl || 'https://via.placeholder.com/300x450?text=Movie'} alt={title || `Movie ${i}`} className="w-full h-full object-cover" />
+                      <div className="absolute top-2 right-2 z-20 flex space-x-2">
+                        <button onClick={(e) => { e.stopPropagation(); const obj = { poster: posterUrl || '', title, id }; import('../lib/myList').then(m => { m.toggleWishlist(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Wishlist"><i className="fas fa-bookmark"></i></button>
+                        <button onClick={(e) => { e.stopPropagation(); const obj = { poster: posterUrl || '', title, id }; import('../lib/myList').then(m => { m.toggleFavorite(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Favourite"><i className="fas fa-heart"></i></button>
+                      </div>
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                        <button className="play-button bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
+                );
               })}
-              
+
             </div>
           </div>
         </div>

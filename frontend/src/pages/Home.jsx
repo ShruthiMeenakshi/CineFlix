@@ -18,7 +18,7 @@ export default function Home() {
   const [curatedMovies, setCuratedMovies] = useState([]);
 
   useEffect(() => {
-    document.title = 'MoviesHere - Home';
+    document.title = 'CineFlix - Home';
     // load curated OMDB movies for the featured grids
     let mounted = true;
     async function loadCurated() {
@@ -155,7 +155,7 @@ export default function Home() {
     <div>
       <nav className="fixed w-full z-50 bg-gradient-to-b from-black to-transparent px-4 md:px-12 py-4 flex justify-between items-center">
         <div className="flex items-center">
-          <a href="#" className="text-3xl font-bold text-movieshere-red">MOVIES<span className="text-white">HERE</span></a>
+          <a href="#" className="text-3xl font-bold text-cineflix-red">CineFlix</a>
           <div className="hidden md:flex ml-8 space-x-6">
             <Link to="/" className="hover:text-gray-300">Home</Link>
             <Link to="/tvshows" className="hover:text-gray-300">TV Shows</Link>
@@ -165,7 +165,7 @@ export default function Home() {
           </div>
         </div>
         <div className="flex items-center space-x-4">
-          <div className="hidden md:flex items-center bg-movieshere-gray/70 rounded px-3 py-1.5">
+          <div className="hidden md:flex items-center bg-cineflix-gray/70 rounded px-3 py-1.5">
             <i className="fas fa-search text-gray-300 mr-2"></i>
             <input value={navbarQuery} onChange={(e) => setNavbarQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { setQuery(navbarQuery); searchMovies(navbarQuery, 1); } }} id="navbarSearchInput" type="text" placeholder="Search movies..." className="bg-transparent text-sm focus:outline-none w-48" />
           </div>
@@ -187,7 +187,7 @@ export default function Home() {
             <button className="bg-white text-black px-6 py-2 rounded flex items-center hover:bg-opacity-80">
               <i className="fas fa-play mr-2"></i> Play
             </button>
-            <Link to="/avengers" className="bg-movieshere-gray bg-opacity-70 px-6 py-2 rounded flex items-center hover:bg-opacity-50">
+            <Link to="/avengers" className="bg-cineflix-gray bg-opacity-70 px-6 py-2 rounded flex items-center hover:bg-opacity-50">
               <i className="fas fa-info-circle mr-2"></i> More Info
             </Link>
           </div>
@@ -198,8 +198,8 @@ export default function Home() {
         <div className="mb-10 bg-black/30 rounded-lg p-4 md:p-6">
           <h2 className="text-xl font-bold mb-4">Search Movies</h2>
           <form onSubmit={(e) => { e.preventDefault(); searchMovies(query, 1); }} id="movieSearchForm" className="flex flex-col md:flex-row gap-3">
-            <input value={query} onChange={(e) => setQuery(e.target.value)} id="movieSearchInput" type="text" placeholder="Type a movie name (e.g. Batman)" className="flex-1 bg-movieshere-gray px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-movieshere-red" />
-            <button type="submit" className="bg-movieshere-red px-5 py-2 rounded hover:bg-red-700" disabled={isLoading}>Search</button>
+            <input value={query} onChange={(e) => setQuery(e.target.value)} id="movieSearchInput" type="text" placeholder="Type a movie name (e.g. Batman)" className="flex-1 bg-cineflix-gray px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-cineflix-red" />
+            <button type="submit" className="bg-cineflix-red px-5 py-2 rounded hover:bg-red-700" disabled={isLoading}>Search</button>
           </form>
           <p id="searchStatus" className="text-gray-300 text-sm mt-3">{searchStatus}</p>
           <div id="searchResults" className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-5">
@@ -209,7 +209,7 @@ export default function Home() {
 
         {/* Popular, Trending, Continue Watching rows copied from original HTML */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold mb-4">Popular on MoviesHere</h2>
+          <h2 className="text-xl font-bold mb-4">Popular on CineFlix</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
             {(curatedMovies.length ? curatedMovies.slice(0,6) : Array.from({length:6})).map((m, idx) => (
               m && m.imdbID ? renderMovieCard(m) : (
@@ -291,14 +291,14 @@ export default function Home() {
             </div>
           </div>
           <button className="border border-gray-400 px-4 py-2 mb-6 hover:text-white">Service Code</button>
-          <p className="text-sm">© 2023 MoviesHere, Inc.</p>
+          <p className="text-sm">© 2023 CineFlix, Inc.</p>
         </div>
       </footer>
 
       {/* Modal */}
       {modalOpen && modalData && (
         <div id="movieModal" className="fixed inset-0 bg-black/70 flex items-center justify-center p-4">
-          <div className="bg-movieshere-dark rounded-lg max-w-2xl w-full overflow-auto">
+          <div className="bg-cineflix-dark rounded-lg max-w-2xl w-full overflow-auto">
             <div className="p-4 flex justify-end"><button onClick={() => setModalOpen(false)} className="text-gray-300">Close</button></div>
             <div id="modalContent" className="p-4 text-gray-200">
               <div className="md:flex gap-4">

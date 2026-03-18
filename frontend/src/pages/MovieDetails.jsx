@@ -47,8 +47,8 @@ export default function MovieDetails() {
   const metascore = details?.Metascore && details.Metascore !== 'N/A' ? details.Metascore : null;
 
   return (
-    <div className="bg-movieshere-dark text-white min-h-screen py-8 px-4 md:px-12">
-      <Link to="/movies" className="inline-block mb-6 text-movieshere-red hover:underline">← Back to Movies</Link>
+    <div className="bg-cineflix-dark text-white min-h-screen py-8 px-4 md:px-12">
+      <Link to="/movies" className="inline-block mb-6 text-cineflix-red hover:underline">← Back to Movies</Link>
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Poster column */}
@@ -57,7 +57,7 @@ export default function MovieDetails() {
             <img src={poster} alt={details.Title} className="w-full h-80 object-cover md:h-[28rem]" />
             <div className="absolute top-4 left-4 bg-black bg-opacity-60 text-white px-3 py-1 rounded flex items-center gap-3">
               <div className="text-sm">IMDB</div>
-              <div className="text-xl font-bold text-movieshere-red">{imdbRating}</div>
+              <div className="text-xl font-bold text-cineflix-red">{imdbRating}</div>
             </div>
             {metascore && (
               <div className="absolute top-4 right-4 bg-yellow-400 text-black px-2 py-1 rounded text-sm font-semibold">Metascore: {metascore}</div>
@@ -103,7 +103,7 @@ export default function MovieDetails() {
           <div className="flex items-center gap-6">
             <div className="flex flex-col">
               <div className="text-sm text-gray-400">IMDB Rating</div>
-              <div className="text-2xl font-bold text-movieshere-red">{imdbRating}</div>
+              <div className="text-2xl font-bold text-cineflix-red">{imdbRating}</div>
             </div>
             {details.Ratings && details.Ratings.length > 0 && (
               <div>

@@ -1,5 +1,5 @@
-const FAV_KEY = 'movieshere:favorites';
-const WISH_KEY = 'movieshere:wishlist';
+const FAV_KEY = 'cineflix:favorites';
+const WISH_KEY = 'cineflix:wishlist';
 
 function read(key) {
   try {

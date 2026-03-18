@@ -1,4 +1,4 @@
-# MoviesHere — React Frontend
+# CineFlix — React Frontend
 
 This folder contains a small React frontend that reproduces the original UI.
 
