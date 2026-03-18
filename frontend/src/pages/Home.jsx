@@ -5,6 +5,7 @@ import { toggleFavorite, toggleWishlist, isFavorite, isWishlisted } from '../lib
 const API_BASE_URL = 'http://localhost:8082/api/movies';
 
 export default function Home() {
+  const [listVersion, setListVersion] = useState(0);
   const [query, setQuery] = useState('');
   const [navbarQuery, setNavbarQuery] = useState('');
   const [results, setResults] = useState([]);
@@ -46,6 +47,13 @@ export default function Home() {
     }
     loadCurated();
     return () => { mounted = false; };
+  }, []);
+
+  useEffect(() => {
+    function onUpdate() { setListVersion(v => v + 1); }
+    window.addEventListener('storage', onUpdate);
+    window.addEventListener('mylist:change', onUpdate);
+    return () => { window.removeEventListener('storage', onUpdate); window.removeEventListener('mylist:change', onUpdate); };
   }, []);
 
   async function searchMovies(q, p = 1) {

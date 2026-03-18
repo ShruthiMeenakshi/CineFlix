@@ -1,26 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { fetchJsonWithCache, prefetchImages } from '../lib/apiCache';
 
 const API_BASE = 'http://localhost:8082/api/movies';
 
 export default function Tvshows() {
   const [posters, setPosters] = useState([]);
+  const [listVersion, setListVersion] = useState(0);
 
   useEffect(() => {
     document.title = 'TV Shows | MoviesHere';
     async function load() {
       try {
-        const res = await fetch(`${API_BASE}/random-posters?count=18`);
-        const data = await res.json();
+        const url = `${API_BASE}/random-posters?count=18`;
+        const data = await fetchJsonWithCache(url);
         if (Array.isArray(data)) {
           const normalized = data.map((u, i) => ({ Poster: u, Title: `Poster ${i+1}`, imdbID: `poster-tv-${i}` }));
           setPosters(normalized);
+          prefetchImages(normalized.map(n => n.Poster));
         }
       } catch (e) {
         // ignore
       }
     }
     load();
+    function onUpdate() { setListVersion(v => v + 1); }
+    window.addEventListener('storage', onUpdate);
+    window.addEventListener('mylist:change', onUpdate);
+    return () => { window.removeEventListener('storage', onUpdate); window.removeEventListener('mylist:change', onUpdate); };
   }, []);
 
   const [activeCategory, setActiveCategory] = useState('All');
@@ -29,19 +36,23 @@ export default function Tvshows() {
     setActiveCategory(cat);
     if (cat === 'All') {
       try {
-        const res = await fetch(`${API_BASE}/random-posters?count=18`);
-        const data = await res.json();
+        const url = `${API_BASE}/random-posters?count=18`;
+        const data = await fetchJsonWithCache(url);
         if (Array.isArray(data)) {
           const normalized = data.map((u, i) => ({ Poster: u, Title: `Poster ${i+1}`, imdbID: `poster-tv-${i}` }));
           setPosters(normalized);
+          prefetchImages(normalized.map(n => n.Poster));
         }
       } catch (e) {}
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/search?query=${encodeURIComponent(cat)}&page=1&type=series`);
-      const data = await res.json();
-      if (data && Array.isArray(data.Search)) setPosters(data.Search);
+      const url = `${API_BASE}/search?query=${encodeURIComponent(cat)}&page=1&type=series`;
+      const data = await fetchJsonWithCache(url);
+      if (data && Array.isArray(data.Search)) {
+        setPosters(data.Search);
+        prefetchImages(data.Search.map(s => s.Poster).filter(Boolean));
+      }
     } catch (e) {}
   }
 

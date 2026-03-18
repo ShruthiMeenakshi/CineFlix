@@ -8,10 +8,12 @@ import MovieDetails from './pages/MovieDetails.jsx';
 import Tvshows from './pages/Tvshows.jsx';
 import MyList from './pages/MyList.jsx';
 import Profile from './pages/Profile.jsx';
+import Toast from './components/Toast.jsx';
 
 export default function App() {
   return (
     <div>
+      <Toast />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} />

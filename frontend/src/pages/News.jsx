@@ -1,8 +1,54 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { fetchJsonWithCache, prefetchImages } from '../lib/apiCache';
+
+const API_BASE = 'http://localhost:8082/api/movies';
 
 export default function News() {
+  const [recent, setRecent] = useState([]);
+  const [trending, setTrending] = useState([]);
+
   useEffect(() => { document.title = 'New & Popular | MoviesHere'; }, []);
+
+  useEffect(() => {
+    async function loadRecent() {
+      try {
+        // Use a year query to approximate "recent" additions
+        const url = `${API_BASE}/search?query=2024&type=movie&page=1`;
+        const data = await fetchJsonWithCache(url);
+        const list = (data && Array.isArray(data.Search)) ? data.Search : [];
+        setRecent(list.slice(0, 12));
+        prefetchImages(list.map(i => i.Poster).filter(Boolean));
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    async function loadTrending() {
+      try {
+        const queries = ['Avengers','Batman','Spider-Man','Star Wars','Matrix'];
+        const results = [];
+        for (const q of queries) {
+          try {
+            const url = `${API_BASE}/search?query=${encodeURIComponent(q)}&type=movie&page=1`;
+            const data = await fetchJsonWithCache(url);
+            if (data && Array.isArray(data.Search)) {
+              for (const it of data.Search) {
+                if (!results.find(r => r.imdbID === it.imdbID)) results.push(it);
+              }
+            }
+          } catch (e) {}
+        }
+        setTrending(results.slice(0, 18));
+        prefetchImages(results.map(r => r.Poster).filter(Boolean));
+      } catch (e) {}
+    }
+
+    loadRecent();
+    loadTrending();
+  }, []);
+
+  const posterOrPlaceholder = (p, label) => p && p !== 'N/A' ? p : `https://via.placeholder.com/300x450?text=${encodeURIComponent(label)}`;
 
   return (
     <div className="bg-movieshere-dark text-white min-h-screen">
@@ -30,22 +76,41 @@ export default function News() {
         <div>
           <h2 className="text-xl md:text-2xl font-bold mb-6">Recently Added</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            <div className="group relative rounded overflow-hidden">
-              <div className="absolute top-2 left-2 bg-movieshere-red text-white text-xs font-bold px-2 py-1 rounded z-10">NEW</div>
-              <img src="https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg" alt="Content" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded">
-                  <i className="fas fa-play mr-2"></i> Play
-                </button>
-              </div>
-            </div>
+            {recent.length === 0 ? (
+              Array.from({length:6}).map((_,i) => (
+                <div key={i} className="h-56 bg-gray-800 animate-pulse rounded" />
+              ))
+            ) : (
+              recent.map((item) => (
+                <div key={item.imdbID} className="group relative rounded overflow-hidden">
+                  <div className="absolute top-2 left-2 bg-movieshere-red text-white text-xs font-bold px-2 py-1 rounded z-10">NEW</div>
+                  <img src={posterOrPlaceholder(item.Poster, item.Title)} alt={item.Title} className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                    <Link to={`/movie/${encodeURIComponent(item.Title)}`} className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-info-circle mr-2"></i> More Info</Link>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
         <div className="mt-12">
           <h2 className="text-xl md:text-2xl font-bold mb-6">Trending Now</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {/* trending items placeholder */}
+            {trending.length === 0 ? (
+              Array.from({length:6}).map((_,i) => (
+                <div key={i} className="h-56 bg-gray-800 animate-pulse rounded" />
+              ))
+            ) : (
+              trending.map(item => (
+                <div key={item.imdbID} className="group relative rounded overflow-hidden">
+                  <img src={posterOrPlaceholder(item.Poster, item.Title)} alt={item.Title} className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                    <Link to={`/movie/${encodeURIComponent(item.Title)}`} className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-info-circle mr-2"></i> More Info</Link>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>

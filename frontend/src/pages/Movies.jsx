@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { fetchJsonWithCache, prefetchImages } from '../lib/apiCache';
 
 export default function Movies() {
   useEffect(() => {
@@ -9,18 +10,20 @@ export default function Movies() {
   }, []);
 
   const [posters, setPosters] = useState([]);
+  const [listVersion, setListVersion] = useState(0);
   const [activeCategory, setActiveCategory] = useState('All');
 
   // fetch random posters from backend and initialize sliders
   useEffect(() => {
     async function loadPosters() {
       try {
-        const res = await fetch('http://localhost:8082/api/movies/random-posters?count=12');
-        const data = await res.json();
+        const url = 'http://localhost:8082/api/movies/random-posters?count=12';
+        const data = await fetchJsonWithCache(url);
         if (Array.isArray(data) && data.length) {
-          // normalize to objects so we have consistent shape
           const normalized = data.map((u, i) => ({ Poster: u, Title: `Poster ${i+1}`, imdbID: `poster-${i}` }));
           setPosters(normalized);
+          // prefetch images to warm browser cache + Cache Storage
+          prefetchImages(normalized.map(n => n.Poster));
           // allow DOM to update then init Swiper
           setTimeout(() => initSwipers(), 200);
         }
@@ -32,6 +35,10 @@ export default function Movies() {
     }
 
     loadPosters();
+    function onUpdate() { setListVersion(v => v + 1); }
+    window.addEventListener('storage', onUpdate);
+    window.addEventListener('mylist:change', onUpdate);
+    return () => { window.removeEventListener('storage', onUpdate); window.removeEventListener('mylist:change', onUpdate); };
   }, []);
 
   function initSwipers() {
@@ -66,10 +73,11 @@ export default function Movies() {
 
     // search OMDB for this category as keyword, restrict to movies
     try {
-      const res = await fetch(`http://localhost:8082/api/movies/search?query=${encodeURIComponent(cat)}&page=1&type=movie`);
-      const data = await res.json();
+      const url = `http://localhost:8082/api/movies/search?query=${encodeURIComponent(cat)}&page=1&type=movie`;
+      const data = await fetchJsonWithCache(url);
       if (data && Array.isArray(data.Search) && data.Search.length) {
         setPosters(data.Search);
+        prefetchImages(data.Search.map(s => s.Poster).filter(Boolean));
         setTimeout(() => initSwipers(), 200);
       } else {
         // fallback to random posters
