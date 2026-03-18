@@ -4,6 +4,8 @@ import Home from './pages/Home.jsx';
 import Movies from './pages/Movies.jsx';
 import Avengers from './pages/Avengers.jsx';
 import News from './pages/News.jsx';
+import MovieDetails from './pages/MovieDetails.jsx';
+import Tvshows from './pages/Tvshows.jsx';
 
 export default function App() {
   return (
@@ -11,8 +13,10 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} />
+        <Route path="/tvshows" element={<Tvshows />} />
         <Route path="/avengers" element={<Avengers />} />
         <Route path="/news" element={<News />} />
+        <Route path="/movie/:title" element={<MovieDetails />} />
       </Routes>
     </div>
   );

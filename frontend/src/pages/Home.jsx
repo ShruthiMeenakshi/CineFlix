@@ -87,8 +87,16 @@ export default function Home() {
   function renderMovieCard(movie) {
     const poster = movie.Poster && movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x445?text=No+Poster';
     return (
-      <div key={`${movie.imdbID}-${movie.Year}`} className="bg-black/40 rounded overflow-hidden cursor-pointer movie-card" onClick={() => openDetails(movie.imdbID)}>
-        <img src={poster} alt={movie.Title} className="w-full h-64 object-cover" loading="lazy" />
+      <div key={`${movie.imdbID}-${movie.Year}`} className="bg-black/40 rounded overflow-hidden movie-card">
+        <div className="relative group">
+          <img src={poster} alt={movie.Title} className="w-full h-64 object-cover" loading="lazy" />
+          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-end p-3">
+            <div className="w-full flex justify-between items-end">
+              <button onClick={() => openDetails(movie.imdbID)} className="bg-movieshere-red text-white px-3 py-1 rounded opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-200"><i className="fas fa-play mr-2"></i>Play</button>
+              <Link to={`/movie/${encodeURIComponent(movie.Title)}`} className="bg-white text-black px-3 py-1 rounded opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-200">More Info</Link>
+            </div>
+          </div>
+        </div>
         <div className="p-3">
           <p className="font-semibold text-sm line-clamp-2">{movie.Title}</p>
           <p className="text-xs text-gray-300 mt-1">{movie.Year} • {movie.Type}</p>
