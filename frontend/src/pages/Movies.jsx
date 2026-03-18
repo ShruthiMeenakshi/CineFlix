@@ -1,28 +1,110 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function Movies() {
   useEffect(() => {
     document.title = 'Movies | MoviesHere';
-    if (window.Swiper) {
-      try {
-        new window.Swiper('.popular-movies-slider', { slidesPerView: 'auto', spaceBetween: 15, navigation: { nextEl: '.swiper-button-next-popular', prevEl: '.swiper-button-prev-popular' } });
-        new window.Swiper('.new-releases-slider', { slidesPerView: 'auto', spaceBetween: 15, navigation: { nextEl: '.swiper-button-next-new', prevEl: '.swiper-button-prev-new' } });
-        new window.Swiper('.awards-slider', { slidesPerView: 'auto', spaceBetween: 15, navigation: { nextEl: '.swiper-button-next-awards', prevEl: '.swiper-button-prev-awards' } });
-      } catch (e) { console.warn('Swiper init failed', e); }
-    }
+
+    // initial swiper init will be handled after posters are loaded
   }, []);
+
+  const [posters, setPosters] = useState([]);
+
+  // fetch random posters from backend and initialize sliders
+  useEffect(() => {
+    async function loadPosters() {
+      try {
+        const res = await fetch('http://localhost:8082/api/movies/random-posters?count=12');
+        const data = await res.json();
+        if (Array.isArray(data) && data.length) {
+          setPosters(data);
+          // allow DOM to update then init Swiper
+          setTimeout(() => initSwipers(), 200);
+        }
+      } catch (e) {
+        // fail silently
+        // eslint-disable-next-line no-console
+        console.warn('Failed to load posters', e);
+      }
+    }
+
+    loadPosters();
+  }, []);
+
+  function initSwipers() {
+    if (!window.Swiper) return;
+    try {
+      new window.Swiper('.popular-movies-slider', { slidesPerView: 'auto', spaceBetween: 48, navigation: { nextEl: '.swiper-button-next-popular', prevEl: '.swiper-button-prev-popular' }, breakpoints: { 640: { spaceBetween: 48 }, 1024: { spaceBetween: 48 } } });
+      new window.Swiper('.new-releases-slider', { slidesPerView: 'auto', spaceBetween: 48, navigation: { nextEl: '.swiper-button-next-new', prevEl: '.swiper-button-prev-new' }, breakpoints: { 640: { spaceBetween: 48 }, 1024: { spaceBetween: 48 } } });
+      new window.Swiper('.awards-slider', { slidesPerView: 'auto', spaceBetween: 48, navigation: { nextEl: '.swiper-button-next-awards', prevEl: '.swiper-button-prev-awards' }, breakpoints: { 640: { spaceBetween: 48 }, 1024: { spaceBetween: 48 } } });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn('Swiper init failed', e);
+    }
+  }
 
   return (
     <div className="bg-movieshere-dark text-white">
+      <style>{`
+        .hero-gradient { background: linear-gradient(to top, rgba(20,20,20,1) 0%, rgba(20,20,20,0) 50%, rgba(20,20,20,1) 100%); }
+        .swiper-button-next, .swiper-button-prev { color: #E50914 !important; background: rgba(0,0,0,0.5); width:40px !important; height:60px !important; border-radius:4px; transition: all 0.3s ease; opacity:0; }
+        .swiper-button-next:hover, .swiper-button-prev:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
+        .swiper-button-next:after, .swiper-button-prev:after { font-size:24px !important; }
+        .swiper-container:hover .swiper-button-next, .swiper-container:hover .swiper-button-prev { opacity:1; }
+        .swiper-slide { width: auto !important; transition: transform 0.25s ease; }
+        .swiper-slide:hover { transform: scale(1.03); z-index:10; }
+        .movie-card { transition: all 0.25s ease; transform-origin: center bottom; border-radius:8px; overflow:hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.35); }
+        .movie-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 18px 40px rgba(0,0,0,0.6); }
+        .movie-card img { transition: transform 0.5s ease; height: 20rem; width: 100%; object-fit: cover; display:block; }
+        .movie-card:hover img { transform: scale(1.05); }
+        .play-button { transform: translateY(18px); opacity:0; transition: all 0.25s ease; padding:10px 14px; border-radius:9999px; display:inline-flex; align-items:center; justify-content:center; gap:8px; font-weight:600; box-shadow: 0 6px 18px rgba(0,0,0,0.5); }
+        .movie-card:hover .play-button { transform: translateY(0); opacity:1; }
+        .movie-card .play-button i { margin-right:0; }
+        .badge { transition: all 0.3s ease; }
+        .movie-card:hover .badge { transform: translateY(-5px); }
+        .section-header { position: relative; }
+        .section-header:after { content:''; position:absolute; bottom:-5px; left:0; width:0; height:2px; background:#E50914; transition: width 0.3s ease; }
+        .section-header:hover:after { width:100%; }
+        .featured-movie { transition: all 0.3s ease; }
+        .featured-movie:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.7); }
+        .category-btn { transition: all 0.2s ease; }
+        .category-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
+      `}</style>
+
       <nav className="fixed w-full z-50 bg-gradient-to-b from-black to-transparent px-4 md:px-12 py-4 flex justify-between items-center">
         <div className="flex items-center">
           <a href="/" className="text-3xl font-bold text-movieshere-red hover:text-red-600 transition-colors duration-300">MOVIES<span className="text-white">HERE</span></a>
+          <div className="hidden md:flex ml-8 space-x-6">
+            <Link to="/" className="hover:text-gray-300 transition-colors duration-300">Home</Link>
+            <Link to="/tvshows" className="hover:text-gray-300 transition-colors duration-300">TV Shows</Link>
+            <Link to="/movies" className="text-white font-semibold hover:text-gray-300 transition-colors duration-300">Movies</Link>
+            <Link to="/news" className="hover:text-gray-300 transition-colors duration-300">New & Popular</Link>
+            <Link to="/list" className="hover:text-gray-300 transition-colors duration-300">My List</Link>
+          </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="hidden md:block"><i className="fas fa-search hover:text-gray-300 cursor-pointer transition-colors duration-300"></i></div>
+          <div className="hidden md:block"><i className="fas fa-bell hover:text-gray-300 cursor-pointer transition-colors duration-300"></i></div>
+          <div className="flex items-center space-x-2 cursor-pointer group">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-movieshere-red" />
+            <i className="fas fa-caret-down hover:text-gray-300 transition-colors duration-300"></i>
+          </div>
         </div>
       </nav>
 
       <section className="pt-24 pb-12 px-4 md:px-12">
         <h1 className="text-3xl md:text-4xl font-bold mb-8">Movies</h1>
+
+        <div className="flex space-x-4 mb-8 overflow-x-auto pb-4">
+          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-red rounded-md hover:bg-red-700">All Movies</button>
+          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Action</button>
+          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Comedy</button>
+          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Drama</button>
+          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Sci-Fi</button>
+          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Horror</button>
+          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Documentary</button>
+        </div>
+
         <div className="mb-12 featured-movie">
           <h2 className="section-header text-xl md:text-2xl font-bold mb-6">Featured Today</h2>
           <div className="relative group rounded-lg overflow-hidden">
@@ -30,7 +112,7 @@ export default function Movies() {
             <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent rounded-lg"></div>
             <div className="absolute bottom-0 left-0 p-6">
               <h3 className="text-2xl md:text-3xl font-bold mb-2 transition-all duration-300 group-hover:text-movieshere-red">The Batman</h3>
-              <p className="text-gray-300 mb-4 max-w-2xl transition-all duration-300 group-hover:text-white">When the Riddler, a sadistic serial killer, begins murdering key political figures in Gotham...</p>
+              <p className="text-gray-300 mb-4 max-w-2xl transition-all duration-300 group-hover:text-white">When the Riddler, a sadistic serial killer, begins murdering key political figures in Gotham, Batman is forced to investigate the city's hidden corruption and question his family's involvement.</p>
               <div className="flex space-x-4">
                 <button className="bg-white text-black px-6 py-2 rounded flex items-center hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105"><i className="fas fa-play mr-2"></i> Play</button>
                 <Link to="/avengers" className="bg-movieshere-gray bg-opacity-70 px-6 py-2 rounded flex items-center hover:bg-opacity-50 transition-all duration-300 transform hover:scale-105"><i className="fas fa-info-circle mr-2"></i> More Info</Link>
@@ -38,7 +120,127 @@ export default function Movies() {
             </div>
           </div>
         </div>
+
+        <div className="mb-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="section-header text-xl md:text-2xl font-bold">Popular Movies</h2>
+            <div className="flex space-x-4">
+              <div className="swiper-button-prev-popular hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red"><i className="fas fa-chevron-left text-2xl"></i></div>
+              <div className="swiper-button-next-popular hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red"><i className="fas fa-chevron-right text-2xl"></i></div>
+            </div>
+          </div>
+
+          <div className="swiper-container popular-movies-slider">
+            <div className="swiper-wrapper gap-5">
+              {(posters.length ? posters.slice(0, 4) : [null, null, null, null]).map((p, i) => (
+                <div className="swiper-slide" key={i} style={{ width: 150 }}>
+                  <div className="movie-card relative rounded overflow-hidden h-full">
+                    <img src={p || 'https://via.placeholder.com/300x450?text=Movie'} alt={`Movie ${i}`} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                      <button className="play-button bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="section-header text-xl md:text-2xl font-bold">New Releases</h2>
+            <div className="flex space-x-4">
+              <div className="swiper-button-prev-new hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red"><i className="fas fa-chevron-left text-2xl"></i></div>
+              <div className="swiper-button-next-new hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red"><i className="fas fa-chevron-right text-2xl"></i></div>
+            </div>
+          </div>
+
+          <div className="swiper-container new-releases-slider">
+            <div className="swiper-wrapper gap-5">
+              {(posters.length ? posters.slice(4, 8) : [null, null, null, null]).map((p, i) => (
+                <div className="swiper-slide" key={i} style={{ width: 150 }}>
+                  <div className="movie-card relative rounded overflow-hidden h-full">
+                    <div className="badge absolute top-2 left-2 bg-movieshere-red text-white text-xs font-bold px-2 py-1 rounded z-10 transition-transform">NEW</div>
+                    <img src={p || 'https://via.placeholder.com/300x450?text=New'} alt={`New ${i}`} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                      <button className="play-button bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="section-header text-xl md:text-2xl font-bold">Award-Winning Movies</h2>
+            <div className="flex space-x-4">
+              <div className="swiper-button-prev-awards hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red"><i className="fas fa-chevron-left text-2xl"></i></div>
+              <div className="swiper-button-next-awards hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red"><i className="fas fa-chevron-right text-2xl"></i></div>
+            </div>
+          </div>
+
+          <div className="swiper-container awards-slider">
+            <div className="swiper-wrapper gap-5">
+              {(posters.length ? posters.slice(8, 12) : [null, null, null, null]).map((p, i) => (
+                <div className="swiper-slide" key={i} style={{ width: 150 }}>
+                  <div className="movie-card relative rounded overflow-hidden h-full">
+                    <div className="badge absolute top-2 left-2 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded z-10 transition-transform">AWARD</div>
+                    <img src={p || 'https://via.placeholder.com/300x450?text=Award'} alt={`Award ${i}`} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                      <button className="play-button bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
+
+      <footer className="bg-black text-gray-400 px-4 md:px-12 py-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex mb-6 space-x-6">
+            <a href="#" className="hover:text-white transition-colors duration-300 transform hover:scale-110"><i className="fab fa-facebook text-2xl"></i></a>
+            <a href="#" className="hover:text-white transition-colors duration-300 transform hover:scale-110"><i className="fab fa-instagram text-2xl"></i></a>
+            <a href="#" className="hover:text-white transition-colors duration-300 transform hover:scale-110"><i className="fab fa-twitter text-2xl"></i></a>
+            <a href="#" className="hover:text-white transition-colors duration-300 transform hover:scale-110"><i className="fab fa-youtube text-2xl"></i></a>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <ul className="space-y-3">
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Audio Description</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Investor Relations</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Legal Notices</a></li>
+              </ul>
+            </div>
+            <div>
+              <ul className="space-y-3">
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Help Center</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Jobs</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Cookie Preferences</a></li>
+              </ul>
+            </div>
+            <div>
+              <ul className="space-y-3">
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Gift Cards</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Terms of Use</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Corporate Information</a></li>
+              </ul>
+            </div>
+            <div>
+              <ul className="space-y-3">
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Media Center</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Privacy</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-300">Contact Us</a></li>
+              </ul>
+            </div>
+          </div>
+          <button className="border border-gray-400 px-4 py-2 mb-6 hover:text-white hover:border-white transition-all duration-300">Service Code</button>
+          <p className="text-sm">© 2023 MoviesHere, Inc.</p>
+        </div>
+      </footer>
     </div>
   );
 }

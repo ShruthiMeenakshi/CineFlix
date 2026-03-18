@@ -5,7 +5,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/movies")
-@CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:5500"})
+@CrossOrigin(origins = {
+        "http://127.0.0.1:5500",
+        "http://localhost:5500",
+        "http://localhost:5173",
+        "http://localhost:3000"
+})
 public class MovieController {
 
     private final OmdbService omdbService;
@@ -23,5 +28,10 @@ public class MovieController {
     @GetMapping("/{id}")
     public String getMovie(@PathVariable String id) {
         return omdbService.getMovieDetails(id);
+    }
+
+    @GetMapping("/random-posters")
+    public java.util.List<String> getRandomPosters(@RequestParam(defaultValue = "12") int count) {
+        return omdbService.getRandomPosters(count);
     }
 }
