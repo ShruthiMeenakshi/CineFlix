@@ -8,7 +8,7 @@ export default function News() {
   const [recent, setRecent] = useState([]);
   const [trending, setTrending] = useState([]);
 
-  useEffect(() => { document.title = 'New & Popular | MoviesHere'; }, []);
+  useEffect(() => { document.title = 'New & Popular | CineFlix'; }, []);
 
   useEffect(() => {
     async function loadRecent() {
@@ -51,10 +51,10 @@ export default function News() {
   const posterOrPlaceholder = (p, label) => p && p !== 'N/A' ? p : `https://via.placeholder.com/300x450?text=${encodeURIComponent(label)}`;
 
   return (
-    <div className="bg-movieshere-dark text-white min-h-screen">
+    <div className="bg-cineflix-dark text-white min-h-screen">
       <nav className="fixed w-full z-50 bg-gradient-to-b from-black to-transparent px-4 md:px-12 py-4 flex justify-between items-center">
         <div className="flex items-center">
-          <a href="#" className="text-3xl font-bold text-movieshere-red">MOVIES<span className="text-white">HERE</span></a>
+          <a href="#" className="text-3xl font-bold text-cineflix-red">CineFlix</a>
           <div className="hidden md:flex ml-8 space-x-6">
             <Link to="/" className="hover:text-gray-300">Home</Link>
             <Link to="/tvshows" className="hover:text-gray-300">TV Shows</Link>
@@ -68,7 +68,7 @@ export default function News() {
       <section className="pt-24 pb-12 px-4 md:px-12">
         <h1 className="text-3xl md:text-4xl font-bold mb-8">New & Popular</h1>
         <div className="flex border-b border-gray-700 mb-8">
-          <button className="px-4 py-2 border-b-2 border-movieshere-red text-white">What's New</button>
+          <button className="px-4 py-2 border-b-2 border-cineflix-red text-white">What's New</button>
           <button className="px-4 py-2 text-gray-400 hover:text-white">Top 10</button>
           <button className="px-4 py-2 text-gray-400 hover:text-white">Coming Soon</button>
         </div>
@@ -83,10 +83,10 @@ export default function News() {
             ) : (
               recent.map((item) => (
                 <div key={item.imdbID} className="group relative rounded overflow-hidden">
-                  <div className="absolute top-2 left-2 bg-movieshere-red text-white text-xs font-bold px-2 py-1 rounded z-10">NEW</div>
+                  <div className="absolute top-2 left-2 bg-cineflix-red text-white text-xs font-bold px-2 py-1 rounded z-10">NEW</div>
                   <img src={posterOrPlaceholder(item.Poster, item.Title)} alt={item.Title} className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                    <Link to={`/movie/${encodeURIComponent(item.Title)}`} className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-info-circle mr-2"></i> More Info</Link>
+                    <Link to={`/movie/${encodeURIComponent(item.Title)}`} className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-cineflix-red text-white px-4 py-2 rounded"><i className="fas fa-info-circle mr-2"></i> More Info</Link>
                   </div>
                 </div>
               ))
@@ -106,7 +106,7 @@ export default function News() {
                 <div key={item.imdbID} className="group relative rounded overflow-hidden">
                   <img src={posterOrPlaceholder(item.Poster, item.Title)} alt={item.Title} className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                    <Link to={`/movie/${encodeURIComponent(item.Title)}`} className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-info-circle mr-2"></i> More Info</Link>
+                    <Link to={`/movie/${encodeURIComponent(item.Title)}`} className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-cineflix-red text-white px-4 py-2 rounded"><i className="fas fa-info-circle mr-2"></i> More Info</Link>
                   </div>
                 </div>
               ))
@@ -154,7 +154,7 @@ export default function News() {
             </div>
           </div>
           <button className="border border-gray-400 px-4 py-2 mb-6 hover:text-white">Service Code</button>
-          <p className="text-sm">© 2023 MoviesHere, Inc.</p>
+          <p className="text-sm">© 2023 CineFlix, Inc.</p>
         </div>
       </footer>
     </div>

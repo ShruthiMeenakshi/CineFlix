@@ -100,7 +100,7 @@ export default function MyList() {
     <>
       <nav className="fixed w-full z-50 bg-gradient-to-b from-black/60 to-transparent px-4 md:px-12 h-24 md:h-16 flex justify-between items-center">
         <div className="flex items-center">
-          <a className="text-3xl font-bold text-movieshere-red" href="/">MOVIES<span className="text-white">HERE</span></a>
+          <a className="text-3xl font-bold text-cineflix-red" href="/">CineFlix</a>
           <div className="hidden md:flex ml-8 space-x-6">
             <a className="hover:text-gray-300" href="/">Home</a>
             <a className="hover:text-gray-300" href="/tvshows">TV Shows</a>
@@ -113,13 +113,13 @@ export default function MyList() {
           <div className="hidden md:block"><i className="fas fa-search hover:text-gray-300 cursor-pointer"></i></div>
           <div className="hidden md:block"><i className="fas fa-bell hover:text-gray-300 cursor-pointer"></i></div>
           <div className="flex items-center space-x-2 cursor-pointer group">
-            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-movieshere-red" />
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-cineflix-red" />
             <i className="fas fa-caret-down hover:text-gray-300"></i>
           </div>
         </div>
       </nav>
 
-      <div className="relative bg-movieshere-dark text-white min-h-screen px-4 md:px-12 pt-24 overflow-hidden">
+      <div className="relative bg-cineflix-dark text-white min-h-screen px-4 md:px-12 pt-24 overflow-hidden">
         {/* Decorative blurred gradients */}
         <div className="pointer-events-none absolute -top-20 -left-20 w-96 h-96 bg-gradient-to-br from-purple-800 via-indigo-700 to-transparent opacity-40 rounded-full blur-3xl"></div>
         <div className="pointer-events-none absolute -bottom-40 right-[-10rem] w-[28rem] h-[28rem] bg-gradient-to-tr from-pink-700 via-red-600 to-transparent opacity-30 rounded-full blur-2xl"></div>
@@ -143,15 +143,15 @@ export default function MyList() {
             {favs.filter(m => m.title.toLowerCase().includes(favFilter.toLowerCase())).map(m => (
               <div key={m.id} className="group relative rounded overflow-hidden bg-black/20">
                 <img src={m.poster || 'https://via.placeholder.com/300x450?text=No+Poster'} alt={m.title} className="w-full h-56 object-cover" />
-                <div className="absolute top-2 right-2 z-20 flex space-x-2">
+                    <div className="absolute top-2 right-2 z-20 flex space-x-2">
                   <button onClick={() => { removeFromFav(m.id); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-80 text-white" title="Remove"><i className="fas fa-times"></i></button>
                   <button onClick={() => moveToWishlist(m)} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-80 text-white" title="Move to Wishlist"><i className="fas fa-bookmark"></i></button>
                 </div>
                 <div className="p-3">
                   <div className="font-semibold text-sm line-clamp-2">{m.title}</div>
                   <div className="text-xs text-gray-300 mt-1">{m.year}</div>
-                  <div className="mt-3 flex space-x-2">
-                    <Link to={`/movie/${encodeURIComponent(m.title)}`} className="px-3 py-1 bg-movieshere-red rounded text-sm">View</Link>
+                    <div className="mt-3 flex space-x-2">
+                    <Link to={`/movie/${encodeURIComponent(m.title)}`} className="px-3 py-1 bg-cineflix-red rounded text-sm">View</Link>
                     <button onClick={() => moveToWishlist(m)} className="px-3 py-1 bg-gray-700 rounded text-sm">Move to Wishlist</button>
                   </div>
                 </div>
@@ -185,8 +185,8 @@ export default function MyList() {
                 <div className="p-3">
                   <div className="font-semibold text-sm line-clamp-2">{m.title}</div>
                   <div className="text-xs text-gray-300 mt-1">{m.year}</div>
-                  <div className="mt-3 flex space-x-2">
-                    <Link to={`/movie/${encodeURIComponent(m.title)}`} className="px-3 py-1 bg-movieshere-red rounded text-sm">View</Link>
+                    <div className="mt-3 flex space-x-2">
+                    <Link to={`/movie/${encodeURIComponent(m.title)}`} className="px-3 py-1 bg-cineflix-red rounded text-sm">View</Link>
                     <button onClick={() => moveToFavorites(m)} className="px-3 py-1 bg-gray-700 rounded text-sm">Move to Favourites</button>
                   </div>
                 </div>
