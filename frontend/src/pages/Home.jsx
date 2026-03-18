@@ -1,0 +1,350 @@
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+
+const API_BASE_URL = 'http://localhost:8081/api/movies';
+
+export default function Home() {
+  const [query, setQuery] = useState('');
+  const [navbarQuery, setNavbarQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [searchStatus, setSearchStatus] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState(null);
+
+  useEffect(() => {
+    document.title = 'MoviesHere - Home';
+  }, []);
+
+  async function searchMovies(q, p = 1) {
+    const trimmed = q.trim();
+    if (!trimmed) {
+      setSearchStatus('Please enter a movie name.');
+      setResults([]);
+      return;
+    }
+
+    if (p === 1) {
+      setResults([]);
+      setPage(1);
+      setTotalResults(0);
+    }
+
+    setIsLoading(true);
+    setSearchStatus('Searching...');
+    try {
+      const res = await fetch(`${API_BASE_URL}/search?query=${encodeURIComponent(trimmed)}&page=${p}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to fetch results.');
+
+      if (data.Response === 'False' || !data.Search?.length) {
+        if (p === 1) {
+          setSearchStatus(data.Error || `No movies found for "${trimmed}".`);
+          setResults([]);
+        } else {
+          setSearchStatus('No more results.');
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      setResults(prev => p === 1 ? data.Search : [...prev, ...data.Search]);
+      setSearchStatus(`Showing page ${p} results for "${trimmed}".`);
+      setTotalResults(parseInt(data.totalResults || '0', 10));
+      setPage(p);
+    } catch (err) {
+      setSearchStatus(`Search failed: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function openDetails(id) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/${encodeURIComponent(id)}?plot=full`);
+      const data = await res.json();
+      if (!res.ok || data.Response === 'False') {
+        setSearchStatus(data.Error || 'Failed to load details.');
+        return;
+      }
+      setModalData(data);
+      setModalOpen(true);
+    } catch (err) {
+      setSearchStatus(`Details fetch failed: ${err.message}`);
+    }
+  }
+
+  function renderMovieCard(movie) {
+    const poster = movie.Poster && movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x445?text=No+Poster';
+    return (
+      <div key={movie.imdbID} className="bg-black/40 rounded overflow-hidden cursor-pointer movie-card" onClick={() => openDetails(movie.imdbID)}>
+        <img src={poster} alt={movie.Title} className="w-full h-64 object-cover" loading="lazy" />
+        <div className="p-3">
+          <p className="font-semibold text-sm line-clamp-2">{movie.Title}</p>
+          <p className="text-xs text-gray-300 mt-1">{movie.Year} • {movie.Type}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <nav className="fixed w-full z-50 bg-gradient-to-b from-black to-transparent px-4 md:px-12 py-4 flex justify-between items-center">
+        <div className="flex items-center">
+          <a href="#" className="text-3xl font-bold text-movieshere-red">MOVIES<span className="text-white">HERE</span></a>
+          <div className="hidden md:flex ml-8 space-x-6">
+            <Link to="/" className="hover:text-gray-300">Home</Link>
+            <Link to="/movies" className="hover:text-gray-300">TV Shows</Link>
+            <Link to="/movies" className="hover:text-gray-300">Movies</Link>
+            <Link to="/news" className="hover:text-gray-300">New & Popular</Link>
+            <a href="/list.html" className="hover:text-gray-300">My List</a>
+          </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="hidden md:flex items-center bg-movieshere-gray/70 rounded px-3 py-1.5">
+            <i className="fas fa-search text-gray-300 mr-2"></i>
+            <input value={navbarQuery} onChange={(e) => setNavbarQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { setQuery(navbarQuery); searchMovies(navbarQuery, 1); } }} id="navbarSearchInput" type="text" placeholder="Search movies..." className="bg-transparent text-sm focus:outline-none w-48" />
+          </div>
+          <a href="/profile.html" className="flex items-center space-x-2 cursor-pointer">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded" />
+            <i className="fas fa-caret-down hover:text-gray-300"></i>
+          </a>
+        </div>
+      </nav>
+
+      <section className="relative h-screen">
+        <div className="absolute inset-0 hero-gradient z-10"></div>
+        <img src="https://image.tmdb.org/t/p/original/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg" alt="Featured Movie" className="w-full h-full object-cover" />
+
+        <div className="absolute bottom-1/4 left-0 right-0 z-20 px-4 md:px-12">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">Avengers</h1>
+          <p className="text-lg md:text-xl max-w-2xl mb-6">When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl.</p>
+          <div className="flex space-x-4">
+            <button className="bg-white text-black px-6 py-2 rounded flex items-center hover:bg-opacity-80">
+              <i className="fas fa-play mr-2"></i> Play
+            </button>
+            <Link to="/avengers" className="bg-movieshere-gray bg-opacity-70 px-6 py-2 rounded flex items-center hover:bg-opacity-50">
+              <i className="fas fa-info-circle mr-2"></i> More Info
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 md:px-12 py-8">
+        <div className="mb-10 bg-black/30 rounded-lg p-4 md:p-6">
+          <h2 className="text-xl font-bold mb-4">Search Movies</h2>
+          <form onSubmit={(e) => { e.preventDefault(); searchMovies(query, 1); }} id="movieSearchForm" className="flex flex-col md:flex-row gap-3">
+            <input value={query} onChange={(e) => setQuery(e.target.value)} id="movieSearchInput" type="text" placeholder="Type a movie name (e.g. Batman)" className="flex-1 bg-movieshere-gray px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-movieshere-red" />
+            <button type="submit" className="bg-movieshere-red px-5 py-2 rounded hover:bg-red-700" disabled={isLoading}>Search</button>
+          </form>
+          <p id="searchStatus" className="text-gray-300 text-sm mt-3">{searchStatus}</p>
+          <div id="searchResults" className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-5">
+            {results.map(renderMovieCard)}
+          </div>
+        </div>
+
+        {/* Popular, Trending, Continue Watching rows copied from original HTML */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold mb-4">Popular on MoviesHere</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded">
+                  <i className="fas fa-play mr-2"></i> Play
+                </button>
+              </div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/1X7vow16X7CnCoexXh4H4F2yDJv.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/9yBVqNruk6Ykrwc32qrK2TIE5xw.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-8">
+          <h2 className="text-xl font-bold mb-4">Trending Now</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/1X7vow16X7CnCoexXh4H4F2yDJv.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/9yBVqNruk6Ykrwc32qrK2TIE5xw.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-8">
+          <h2 className="text-xl font-bold mb-4">Continue Watching</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-600"><div className="h-full bg-movieshere-red" style={{width: '65%'}}></div></div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/1X7vow16X7CnCoexXh4H4F2yDJv.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-600"><div className="h-full bg-movieshere-red" style={{width: '30%'}}></div></div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-600"><div className="h-full bg-movieshere-red" style={{width: '80%'}}></div></div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/9yBVqNruk6Ykrwc32qrK2TIE5xw.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-600"><div className="h-full bg-movieshere-red" style={{width: '45%'}}></div></div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-600"><div className="h-full bg-movieshere-red" style={{width: '15%'}}></div></div>
+            </div>
+            <div className="group relative rounded overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg" alt="Movie" className="w-full h-auto transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-600"><div className="h-full bg-movieshere-red" style={{width: '90%'}}></div></div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-black text-gray-400 px-4 md:px-12 py-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex mb-6">
+            <a href="#" className="mr-4"><i className="fab fa-facebook text-2xl hover:text-white"></i></a>
+            <a href="#" className="mr-4"><i className="fab fa-instagram text-2xl hover:text-white"></i></a>
+            <a href="#" className="mr-4"><i className="fab fa-twitter text-2xl hover:text-white"></i></a>
+            <a href="#" className="mr-4"><i className="fab fa-youtube text-2xl hover:text-white"></i></a>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <ul className="space-y-3">
+                <li><a href="#" className="hover:text-white">Audio Description</a></li>
+                <li><a href="#" className="hover:text-white">Investor Relations</a></li>
+                <li><a href="#" className="hover:text-white">Legal Notices</a></li>
+              </ul>
+            </div>
+            <div>
+              <ul className="space-y-3">
+                <li><a href="#" className="hover:text-white">Help Center</a></li>
+                <li><a href="#" className="hover:text-white">Jobs</a></li>
+                <li><a href="#" className="hover:text-white">Cookie Preferences</a></li>
+              </ul>
+            </div>
+            <div>
+              <ul className="space-y-3">
+                <li><a href="#" className="hover:text-white">Gift Cards</a></li>
+                <li><a href="#" className="hover:text-white">Terms of Use</a></li>
+                <li><a href="#" className="hover:text-white">Corporate Information</a></li>
+              </ul>
+            </div>
+            <div>
+              <ul className="space-y-3">
+                <li><a href="#" className="hover:text-white">Media Center</a></li>
+                <li><a href="#" className="hover:text-white">Privacy</a></li>
+                <li><a href="#" className="hover:text-white">Contact Us</a></li>
+              </ul>
+            </div>
+          </div>
+          <button className="border border-gray-400 px-4 py-2 mb-6 hover:text-white">Service Code</button>
+          <p className="text-sm">© 2023 MoviesHere, Inc.</p>
+        </div>
+      </footer>
+
+      {/* Modal */}
+      {modalOpen && modalData && (
+        <div id="movieModal" className="fixed inset-0 bg-black/70 flex items-center justify-center p-4">
+          <div className="bg-movieshere-dark rounded-lg max-w-2xl w-full overflow-auto">
+            <div className="p-4 flex justify-end"><button onClick={() => setModalOpen(false)} className="text-gray-300">Close</button></div>
+            <div id="modalContent" className="p-4 text-gray-200">
+              <div className="md:flex gap-4">
+                <img src={modalData.Poster && modalData.Poster !== 'N/A' ? modalData.Poster : 'https://via.placeholder.com/300x445?text=No+Poster'} className="w-40 h-auto rounded mb-4 md:mb-0" alt="poster" />
+                <div>
+                  <h3 className="text-xl font-bold">{modalData.Title} ({modalData.Year})</h3>
+                  <p className="text-sm text-gray-300 mt-2">{modalData.Genre} • {modalData.Runtime}</p>
+                  <p className="mt-3 text-gray-200">{modalData.Plot}</p>
+                  <p className="text-xs text-gray-400 mt-3">IMDB: {modalData.imdbRating} • Votes: {modalData.imdbVotes}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

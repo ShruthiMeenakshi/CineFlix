@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MoviesHere (React)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'movieshere-red': '#E50914',
+              'movieshere-dark': '#141414',
+              'movieshere-gray': '#303030',
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+    <style>
+      /* Global styles copied from original HTML to keep UI identical */
+      .hero-gradient {
+        background: linear-gradient(to top, rgba(20, 20, 20, 1) 0%, rgba(20, 20, 20, 0) 50%, rgba(20, 20, 20, 1) 100%);
+      }
+      .swiper-button-next, .swiper-button-prev {
+        color: #E50914 !important;
+        background: rgba(0,0,0,0.5);
+        width: 40px !important;
+        height: 60px !important;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        opacity: 0;
+      }
+      .swiper-button-next:hover, .swiper-button-prev:hover {
+        background: rgba(0,0,0,0.8);
+        transform: scale(1.1);
+      }
+      .swiper-button-next:after, .swiper-button-prev:after {
+        font-size: 24px !important;
+      }
+      .swiper-container:hover .swiper-button-next,
+      .swiper-container:hover .swiper-button-prev {
+        opacity: 1;
+      }
+      .swiper-slide { width: auto !important; transition: transform 0.3s ease; }
+      .swiper-slide:hover { transform: scale(1.05); z-index: 10; }
+      .movie-card { transition: all 0.3s ease; transform-origin: center bottom; }
+      .movie-card:hover { transform: scale(1.05); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+      .movie-card img { transition: transform 0.5s ease; }
+      .movie-card:hover img { transform: scale(1.1); }
+      .play-button { transform: translateY(20px); opacity: 0; transition: all 0.3s ease; }
+      .movie-card:hover .play-button { transform: translateY(0); opacity: 1; }
+      .badge { transition: all 0.3s ease; }
+      .movie-card:hover .badge { transform: translateY(-5px); }
+      .section-header { position: relative; }
+      .section-header:after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: #E50914; transition: width 0.3s ease; }
+      .section-header:hover:after { width: 100%; }
+      .featured-movie { transition: all 0.3s ease; }
+      .featured-movie:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.7); }
+      .category-btn { transition: all 0.2s ease; }
+      .category-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
+      .hero-bg { background-image: url('https://image.tmdb.org/t/p/original/ulzhLuWrPK07P1YkdWQLZnQh1JL.jpg'); background-size: cover; background-position: center; }
+      .glass { background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); }
+    </style>
+  </head>
+  <body class="bg-movieshere-dark text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
