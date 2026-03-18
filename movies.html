@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies | MoviesHere</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'movieshere-red': '#E50914',
+                        'movieshere-dark': '#141414',
+                        'movieshere-gray': '#303030',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base styles */
+        .hero-gradient {
+            background: linear-gradient(to top, rgba(20, 20, 20, 1) 0%, rgba(20, 20, 20, 0) 50%, rgba(20, 20, 20, 1) 100%);
+        }
+        
+        /* Swiper navigation styles */
+        .swiper-button-next, .swiper-button-prev {
+            color: #E50914 !important;
+            background: rgba(0,0,0,0.5);
+            width: 40px !important;
+            height: 60px !important;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+        .swiper-button-next:hover, .swiper-button-prev:hover {
+            background: rgba(0,0,0,0.8);
+            transform: scale(1.1);
+        }
+        .swiper-button-next:after, .swiper-button-prev:after {
+            font-size: 24px !important;
+        }
+        .swiper-container:hover .swiper-button-next,
+        .swiper-container:hover .swiper-button-prev {
+            opacity: 1;
+        }
+        .swiper-slide {
+            width: auto !important;
+            transition: transform 0.3s ease;
+        }
+        .swiper-slide:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+        
+        /* Movie card animations */
+        .movie-card {
+            transition: all 0.3s ease;
+            transform-origin: center bottom;
+        }
+        .movie-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .movie-card img {
+            transition: transform 0.5s ease;
+        }
+        .movie-card:hover img {
+            transform: scale(1.1);
+        }
+        .play-button {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .movie-card:hover .play-button {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Badge animations */
+        .badge {
+            transition: all 0.3s ease;
+        }
+        .movie-card:hover .badge {
+            transform: translateY(-5px);
+        }
+        
+        /* Section header animations */
+        .section-header {
+            position: relative;
+        }
+        .section-header:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #E50914;
+            transition: width 0.3s ease;
+        }
+        .section-header:hover:after {
+            width: 100%;
+        }
+        
+        /* Featured movie animation */
+        .featured-movie {
+            transition: all 0.3s ease;
+        }
+        .featured-movie:hover {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.7);
+        }
+        
+        /* Category button animations */
+        .category-btn {
+            transition: all 0.2s ease;
+        }
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="bg-movieshere-dark text-white">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-gradient-to-b from-black to-transparent px-4 md:px-12 py-4 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center">
+            <a href="#" class="text-3xl font-bold text-movieshere-red hover:text-red-600 transition-colors duration-300">MOVIES<span class="text-white">HERE</span></a>
+            <div class="hidden md:flex ml-8 space-x-6">
+                <a href="home.html" class="hover:text-gray-300 transition-colors duration-300">Home</a>
+                <a href="Tvshows.html" class="hover:text-gray-300 transition-colors duration-300">TV Shows</a>
+                <a href="movies.html" class="text-white font-semibold hover:text-gray-300 transition-colors duration-300">Movies</a>
+                <a href="News.html" class="hover:text-gray-300 transition-colors duration-300">New & Popular</a>
+                <a href="list.html" class="hover:text-gray-300 transition-colors duration-300">My List</a>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="hidden md:block">
+                <i class="fas fa-search hover:text-gray-300 cursor-pointer transition-colors duration-300"></i>
+            </div>
+            <div class="hidden md:block">
+                <i class="fas fa-bell hover:text-gray-300 cursor-pointer transition-colors duration-300"></i>
+            </div>
+            <div class="flex items-center space-x-2 cursor-pointer group">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" class="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-movieshere-red">
+                <i class="fas fa-caret-down hover:text-gray-300 transition-colors duration-300"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Movies Hero -->
+    <section class="pt-24 pb-12 px-4 md:px-12">
+        <h1 class="text-3xl md:text-4xl font-bold mb-8 animate-fade-in">Movies</h1>
+        
+        <!-- Categories -->
+        <div class="flex space-x-4 mb-8 overflow-x-auto pb-4">
+            <button class="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-red rounded-md hover:bg-red-700">All Movies</button>
+            <button class="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Action</button>
+            <button class="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Comedy</button>
+            <button class="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Drama</button>
+            <button class="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Sci-Fi</button>
+            <button class="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Horror</button>
+            <button class="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Documentary</button>
+        </div>
+
+        <!-- Featured Movie -->
+        <div class="mb-12 featured-movie">
+            <h2 class="section-header text-xl md:text-2xl font-bold mb-6">Featured Today</h2>
+            <div class="relative group rounded-lg overflow-hidden">
+                <img src="https://image.tmdb.org/t/p/original/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" alt="The Batman" class="w-full h-64 md:h-96 object-cover rounded-lg transition-transform duration-500 group-hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent rounded-lg"></div>
+                <div class="absolute bottom-0 left-0 p-6">
+                    <h3 class="text-2xl md:text-3xl font-bold mb-2 transition-all duration-300 group-hover:text-movieshere-red">The Batman</h3>
+                    <p class="text-gray-300 mb-4 max-w-2xl transition-all duration-300 group-hover:text-white">When the Riddler, a sadistic serial killer, begins murdering key political figures in Gotham, Batman is forced to investigate the city's hidden corruption and question his family's involvement.</p>
+                    <div class="flex space-x-4">
+                        <button class="bg-white text-black px-6 py-2 rounded flex items-center hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105">
+                            <i class="fas fa-play mr-2"></i> Play
+                        </button>
+                        <button class="bg-movieshere-gray bg-opacity-70 px-6 py-2 rounded flex items-center hover:bg-opacity-50 transition-all duration-300 transform hover:scale-105">
+                            <i class="fas fa-info-circle mr-2"></i> More Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popular Movies Slider -->
+        <div class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="section-header text-xl md:text-2xl font-bold">Popular Movies</h2>
+                <div class="flex space-x-4">
+                    <div class="swiper-button-prev-popular hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red">
+                        <i class="fas fa-chevron-left text-2xl"></i>
+                    </div>
+                    <div class="swiper-button-next-popular hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red">
+                        <i class="fas fa-chevron-right text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="swiper-container popular-movies-slider">
+                <div class="swiper-wrapper">
+                    <!-- Movie items -->
+                    <div class="swiper-slide" style="width: 200px;">
+                        <div class="movie-card relative rounded overflow-hidden h-full">
+                            <img src="https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg" alt="Movie" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                                <button class="play-button bg-movieshere-red text-white px-4 py-2 rounded">
+                                    <i class="fas fa-play mr-2"></i> Play
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide" style="width: 200px;">
+                        <div class="movie-card relative rounded overflow-hidden h-full">
+                            <img src="https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg" alt="Movie" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                                <button class="play-button bg-movieshere-red text-white px-4 py-2 rounded">
+                                    <i class="fas fa-play mr-2"></i> Play
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <!-- Add more movie items here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- New Releases Slider -->
+        <div class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="section-header text-xl md:text-2xl font-bold">New Releases</h2>
+                <div class="flex space-x-4">
+                    <div class="swiper-button-prev-new hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red">
+                        <i class="fas fa-chevron-left text-2xl"></i>
+                    </div>
+                    <div class="swiper-button-next-new hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red">
+                        <i class="fas fa-chevron-right text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="swiper-container new-releases-slider">
+                <div class="swiper-wrapper">
+                    <!-- Movie items -->
+                    <div class="swiper-slide" style="width: 200px;">
+                        <div class="movie-card relative rounded overflow-hidden h-full">
+                            <div class="badge absolute top-2 left-2 bg-movieshere-red text-white text-xs font-bold px-2 py-1 rounded z-10 transition-transform">NEW</div>
+                            <img src="https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg" alt="Movie" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                                <button class="play-button bg-movieshere-red text-white px-4 py-2 rounded">
+                                    <i class="fas fa-play mr-2"></i> Play
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide" style="width: 200px;">
+                        <div class="movie-card relative rounded overflow-hidden h-full">
+                            <div class="badge absolute top-2 left-2 bg-movieshere-red text-white text-xs font-bold px-2 py-1 rounded z-10 transition-transform">NEW</div>
+                            <img src="https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg" alt="Movie" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                                <button class="play-button bg-movieshere-red text-white px-4 py-2 rounded">
+                                    <i class="fas fa-play mr-2"></i> Play
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Add more movie items here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Award-Winning Movies Slider -->
+        <div class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="section-header text-xl md:text-2xl font-bold">Award-Winning Movies</h2>
+                <div class="flex space-x-4">
+                    <div class="swiper-button-prev-awards hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red">
+                        <i class="fas fa-chevron-left text-2xl"></i>
+                    </div>
+                    <div class="swiper-button-next-awards hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red">
+                        <i class="fas fa-chevron-right text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="swiper-container awards-slider">
+                <div class="swiper-wrapper">
+                    <!-- Movie items -->
+                    <div class="swiper-slide" style="width: 200px;">
+                        <div class="movie-card relative rounded overflow-hidden h-full">
+                            <div class="badge absolute top-2 left-2 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded z-10 transition-transform">AWARD</div>
+                            <img src="https://image.tmdb.org/t/p/w500/9yBVqNruk6Ykrwc32qrK2TIE5xw.jpg" alt="Movie" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                                <button class="play-button bg-movieshere-red text-white px-4 py-2 rounded">
+                                    <i class="fas fa-play mr-2"></i> Play
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide" style="width: 200px;">
+                        <div class="movie-card relative rounded overflow-hidden h-full">
+                            <div class="badge absolute top-2 left-2 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded z-10 transition-transform">AWARD</div>
+                            <img src="https://image.tmdb.org/t/p/w500/1X7vow16X7CnCoexXh4H4F2yDJv.jpg" alt="Movie" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                                <button class="play-button bg-movieshere-red text-white px-4 py-2 rounded">
+                                    <i class="fas fa-play mr-2"></i> Play
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Add more movie items here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black text-gray-400 px-4 md:px-12 py-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex mb-6 space-x-6">
+                <a href="#" class="hover:text-white transition-colors duration-300 transform hover:scale-110"><i class="fab fa-facebook text-2xl"></i></a>
+                <a href="#" class="hover:text-white transition-colors duration-300 transform hover:scale-110"><i class="fab fa-instagram text-2xl"></i></a>
+                <a href="#" class="hover:text-white transition-colors duration-300 transform hover:scale-110"><i class="fab fa-twitter text-2xl"></i></a>
+                <a href="#" class="hover:text-white transition-colors duration-300 transform hover:scale-110"><i class="fab fa-youtube text-2xl"></i></a>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-white transition-colors duration-300">Audio Description</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-300">Investor Relations</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-300">Legal Notices</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-white transition-colors duration-300">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-300">Jobs</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-300">Cookie Preferences</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-white transition-colors duration-300">Gift Cards</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-300">Terms of Use</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-300">Corporate Information</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-white transition-colors duration-300">Media Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-300">Privacy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-300">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <button class="border border-gray-400 px-4 py-2 mb-6 hover:text-white hover:border-white transition-all duration-300">
+                Service Code
+            </button>
+            <p class="text-sm">© 2023 MoviesHere, Inc.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Swiper sliders
+        document.addEventListener('DOMContentLoaded', function() {
+            // Popular Movies Slider
+            const popularMoviesSlider = new Swiper('.popular-movies-slider', {
+                slidesPerView: 'auto',
+                spaceBetween: 15,
+                navigation: {
+                    nextEl: '.swiper-button-next-popular',
+                    prevEl: '.swiper-button-prev-popular',
+                },
+                breakpoints: {
+                    640: {
+                        spaceBetween: 20,
+                    },
+                    1024: {
+                        spaceBetween: 25,
+                    },
+                }
+            });
+
+            // New Releases Slider
+            const newReleasesSlider = new Swiper('.new-releases-slider', {
+                slidesPerView: 'auto',
+                spaceBetween: 15,
+                navigation: {
+                    nextEl: '.swiper-button-next-new',
+                    prevEl: '.swiper-button-prev-new',
+                },
+                breakpoints: {
+                    640: {
+                        spaceBetween: 20,
+                    },
+                    1024: {
+                        spaceBetween: 25,
+                    },
+                }
+            });
+
+            // Award-Winning Movies Slider
+            const awardsSlider = new Swiper('.awards-slider', {
+                slidesPerView: 'auto',
+                spaceBetween: 15,
+                navigation: {
+                    nextEl: '.swiper-button-next-awards',
+                    prevEl: '.swiper-button-prev-awards',
+                },
+                breakpoints: {
+                    640: {
+                        spaceBetween: 20,
+                    },
+                    1024: {
+                        spaceBetween: 25,
+                    },
+                }
+            });
+        });
+    </script>
+</body>
+</html>

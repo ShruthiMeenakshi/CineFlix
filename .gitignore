@@ -1,0 +1,43 @@
+# Maven / Java
+/target/
+**/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Spring Boot specific
+spring.log
+
+# Node / front-end
+/node_modules/
+/dist/
+/npm-debug.log*
+/yarn-debug.log*
+/yarn-error.log*
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
+
+# Generated metadata
+/.settings/
+.classpath
+.project
+
+# Others
+*.swp
+*.swo

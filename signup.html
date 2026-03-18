@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign up - MoviesHere</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-movieshere-dark text-white min-h-screen">
+    <style>
+        .hero-gradient {
+            background: linear-gradient(to top, rgba(20,20,20,1) 0%, rgba(20,20,20,0) 50%, rgba(20,20,20,1) 100%);
+        }
+    </style>
+    <section class="relative min-h-screen flex items-center justify-center">
+        <img src="https://image.tmdb.org/t/p/original/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg" alt="bg" class="absolute inset-0 w-full h-full object-cover">
+        <div class="absolute inset-0 hero-gradient"></div>
+
+        <div class="relative z-10 w-full max-w-md p-8 bg-black/60 backdrop-blur-sm rounded-lg shadow-lg">
+            <h1 class="text-3xl font-bold mb-4">Create an account</h1>
+            <p class="text-sm text-gray-300 mb-4">Sign up to save favorites and access your profile.</p>
+            <form id="signupForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-300">Username</label>
+                    <input id="username" class="w-full mt-1 px-3 py-2 rounded bg-black/40 text-white placeholder-gray-400 focus:ring-2 focus:ring-movieshere-red" placeholder="username" />
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-300">Password</label>
+                    <input id="password" type="password" class="w-full mt-1 px-3 py-2 rounded bg-black/40 text-white placeholder-gray-400 focus:ring-2 focus:ring-movieshere-red" placeholder="password" />
+                </div>
+                <div>
+                    <button type="submit" class="w-full bg-movieshere-red px-4 py-2 rounded hover:bg-red-700">Create account</button>
+                </div>
+                <p id="status" class="text-sm text-gray-300"></p>
+            </form>
+            <p class="mt-3 text-sm text-gray-300">Already have an account? <a href="login.html" class="text-movieshere-red">Sign in</a></p>
+        </div>
+    </section>
+
+    <script>
+        const API_BASE = 'http://localhost:8081/api';
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            document.getElementById('status').textContent = 'Creating account...';
+            try {
+                const res = await fetch(API_BASE + '/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                let data = {};
+                try { data = await res.json(); } catch (e) { /* ignore JSON parse */ }
+                if (!res.ok) {
+                    const msg = data.error || data.message || res.statusText || 'Signup failed';
+                    document.getElementById('status').textContent = `Error (${res.status}): ${msg}`;
+                    return;
+                }
+                localStorage.setItem('api_token', data.token);
+                localStorage.setItem('username', data.username);
+                window.location.href = 'profile.html';
+            } catch (err) {
+                document.getElementById('status').textContent = `Network/error: ${err.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
