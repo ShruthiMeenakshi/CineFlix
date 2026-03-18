@@ -63,6 +63,8 @@ export default function News() {
             <Link to="/list" className="hover:text-gray-300">My List</Link>
           </div>
         </div>
+        <div className="flex items-center space-x-4">
+        </div>
       </nav>
 
       <section className="pt-24 pb-12 px-4 md:px-12">

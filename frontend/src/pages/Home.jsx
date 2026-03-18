@@ -164,7 +164,7 @@ export default function Home() {
             <Link to="/list" className="hover:text-gray-300">My List</Link>
           </div>
         </div>
-        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4">
           <div className="hidden md:flex items-center bg-cineflix-gray/70 rounded px-3 py-1.5">
             <i className="fas fa-search text-gray-300 mr-2"></i>
             <input value={navbarQuery} onChange={(e) => setNavbarQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { setQuery(navbarQuery); searchMovies(navbarQuery, 1); } }} id="navbarSearchInput" type="text" placeholder="Search movies..." className="bg-transparent text-sm focus:outline-none w-48" />
