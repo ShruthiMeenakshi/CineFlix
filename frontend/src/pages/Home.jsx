@@ -150,7 +150,7 @@ export default function Home() {
           <a href="#" className="text-3xl font-bold text-movieshere-red">MOVIES<span className="text-white">HERE</span></a>
           <div className="hidden md:flex ml-8 space-x-6">
             <Link to="/" className="hover:text-gray-300">Home</Link>
-            <Link to="/movies" className="hover:text-gray-300">TV Shows</Link>
+            <Link to="/tvshows" className="hover:text-gray-300">TV Shows</Link>
             <Link to="/movies" className="hover:text-gray-300">Movies</Link>
             <Link to="/news" className="hover:text-gray-300">New & Popular</Link>
             <Link to="/list" className="hover:text-gray-300">My List</Link>
@@ -161,10 +161,10 @@ export default function Home() {
             <i className="fas fa-search text-gray-300 mr-2"></i>
             <input value={navbarQuery} onChange={(e) => setNavbarQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { setQuery(navbarQuery); searchMovies(navbarQuery, 1); } }} id="navbarSearchInput" type="text" placeholder="Search movies..." className="bg-transparent text-sm focus:outline-none w-48" />
           </div>
-          <a href="/profile.html" className="flex items-center space-x-2 cursor-pointer">
+          <Link to="/profile" className="flex items-center space-x-2 cursor-pointer">
             <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded" />
             <i className="fas fa-caret-down hover:text-gray-300"></i>
-          </a>
+          </Link>
         </div>
       </nav>
 

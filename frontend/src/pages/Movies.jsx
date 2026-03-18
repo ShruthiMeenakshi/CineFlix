@@ -9,6 +9,7 @@ export default function Movies() {
   }, []);
 
   const [posters, setPosters] = useState([]);
+  const [activeCategory, setActiveCategory] = useState('All');
 
   // fetch random posters from backend and initialize sliders
   useEffect(() => {
@@ -17,7 +18,9 @@ export default function Movies() {
         const res = await fetch('http://localhost:8082/api/movies/random-posters?count=12');
         const data = await res.json();
         if (Array.isArray(data) && data.length) {
-          setPosters(data);
+          // normalize to objects so we have consistent shape
+          const normalized = data.map((u, i) => ({ Poster: u, Title: `Poster ${i+1}`, imdbID: `poster-${i}` }));
+          setPosters(normalized);
           // allow DOM to update then init Swiper
           setTimeout(() => initSwipers(), 200);
         }
@@ -40,6 +43,40 @@ export default function Movies() {
     } catch (e) {
       // eslint-disable-next-line no-console
       console.warn('Swiper init failed', e);
+    }
+  }
+
+  async function fetchCategory(cat) {
+    setActiveCategory(cat);
+    if (cat === 'All') {
+      // reload random posters
+      try {
+        const res = await fetch('http://localhost:8082/api/movies/random-posters?count=12');
+        const data = await res.json();
+        if (Array.isArray(data) && data.length) {
+          const normalized = data.map((u, i) => ({ Poster: u, Title: `Poster ${i+1}`, imdbID: `poster-${i}` }));
+          setPosters(normalized);
+          setTimeout(() => initSwipers(), 200);
+        }
+      } catch (e) {
+        // ignore
+      }
+      return;
+    }
+
+    // search OMDB for this category as keyword, restrict to movies
+    try {
+      const res = await fetch(`http://localhost:8082/api/movies/search?query=${encodeURIComponent(cat)}&page=1&type=movie`);
+      const data = await res.json();
+      if (data && Array.isArray(data.Search) && data.Search.length) {
+        setPosters(data.Search);
+        setTimeout(() => initSwipers(), 200);
+      } else {
+        // fallback to random posters
+        setPosters([]);
+      }
+    } catch (e) {
+      // ignore
     }
   }
 
@@ -96,13 +133,9 @@ export default function Movies() {
         <h1 className="text-3xl md:text-4xl font-bold mb-8">Movies</h1>
 
         <div className="flex space-x-4 mb-8 overflow-x-auto pb-4">
-          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-red rounded-md hover:bg-red-700">All Movies</button>
-          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Action</button>
-          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Comedy</button>
-          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Drama</button>
-          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Sci-Fi</button>
-          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Horror</button>
-          <button className="category-btn whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Documentary</button>
+          {['All','Action','Comedy','Drama','Sci-Fi','Horror','Documentary'].map(cat => (
+            <button key={cat} onClick={() => fetchCategory(cat)} className={`category-btn whitespace-nowrap px-4 py-2 rounded-md ${activeCategory===cat ? 'bg-movieshere-red' : 'bg-movieshere-gray'} hover:opacity-90`}>{cat}</button>
+          ))}
         </div>
 
         <div className="mb-12 featured-movie">
@@ -187,17 +220,26 @@ export default function Movies() {
 
           <div className="swiper-container awards-slider">
             <div className="swiper-wrapper gap-5">
-              {(posters.length ? posters.slice(8, 12) : [null, null, null, null]).map((p, i) => (
+              {(posters.length ? posters.slice(0, 4) : [null, null, null, null]).map((p, i) => {
+                const posterUrl = p ? (typeof p === 'string' ? p : p.Poster) : null;
+                const title = p ? (p.Title || 'Unknown') : '';
+                const id = p ? (p.imdbID || p.id || `slide-${i}`) : `slide-${i}`;
+                return (
                 <div className="swiper-slide" key={i} style={{ width: 150 }}>
                   <div className="movie-card relative rounded overflow-hidden h-full">
-                    <div className="badge absolute top-2 left-2 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded z-10 transition-transform">AWARD</div>
-                    <img src={p || 'https://via.placeholder.com/300x450?text=Award'} alt={`Award ${i}`} className="w-full h-full object-cover" />
+                    <img src={posterUrl || 'https://via.placeholder.com/300x450?text=Movie'} alt={title || `Movie ${i}`} className="w-full h-full object-cover" />
+                    <div className="absolute top-2 right-2 z-20 flex space-x-2">
+                      <button onClick={(e) => { e.stopPropagation(); const obj = { poster: posterUrl || '', title, id }; import('../lib/myList').then(m => { m.toggleWishlist(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Wishlist"><i className="fas fa-bookmark"></i></button>
+                      <button onClick={(e) => { e.stopPropagation(); const obj = { poster: posterUrl || '', title, id }; import('../lib/myList').then(m => { m.toggleFavorite(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Favourite"><i className="fas fa-heart"></i></button>
+                    </div>
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
                       <button className="play-button bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
                     </div>
                   </div>
                 </div>
-              ))}
+              );
+              })}
+              
             </div>
           </div>
         </div>

@@ -12,13 +12,38 @@ export default function Tvshows() {
       try {
         const res = await fetch(`${API_BASE}/random-posters?count=18`);
         const data = await res.json();
-        if (Array.isArray(data)) setPosters(data);
+        if (Array.isArray(data)) {
+          const normalized = data.map((u, i) => ({ Poster: u, Title: `Poster ${i+1}`, imdbID: `poster-tv-${i}` }));
+          setPosters(normalized);
+        }
       } catch (e) {
         // ignore
       }
     }
     load();
   }, []);
+
+  const [activeCategory, setActiveCategory] = useState('All');
+
+  async function fetchCategorySeries(cat) {
+    setActiveCategory(cat);
+    if (cat === 'All') {
+      try {
+        const res = await fetch(`${API_BASE}/random-posters?count=18`);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          const normalized = data.map((u, i) => ({ Poster: u, Title: `Poster ${i+1}`, imdbID: `poster-tv-${i}` }));
+          setPosters(normalized);
+        }
+      } catch (e) {}
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/search?query=${encodeURIComponent(cat)}&page=1&type=series`);
+      const data = await res.json();
+      if (data && Array.isArray(data.Search)) setPosters(data.Search);
+    } catch (e) {}
+  }
 
   const posterOrPlaceholder = (p, label) => p || `https://via.placeholder.com/300x450?text=${encodeURIComponent(label)}`;
 
@@ -49,13 +74,9 @@ export default function Tvshows() {
         <h1 className="text-3xl md:text-4xl font-bold mb-8">TV Shows</h1>
 
         <div className="flex space-x-4 mb-8 overflow-x-auto pb-4">
-          <button className="whitespace-nowrap px-4 py-2 bg-movieshere-red rounded-md">All TV Shows</button>
-          <button className="whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Drama</button>
-          <button className="whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Comedy</button>
-          <button className="whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Action</button>
-          <button className="whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Sci-Fi</button>
-          <button className="whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Horror</button>
-          <button className="whitespace-nowrap px-4 py-2 bg-movieshere-gray hover:bg-movieshere-gray/80 rounded-md">Reality</button>
+          {['All','Drama','Comedy','Action','Sci-Fi','Horror','Reality'].map(cat => (
+            <button key={cat} onClick={() => fetchCategorySeries(cat)} className={`whitespace-nowrap px-4 py-2 rounded-md ${activeCategory===cat ? 'bg-movieshere-red' : 'bg-movieshere-gray'} hover:opacity-90`}>{cat}</button>
+          ))}
         </div>
 
         <div className="mb-12">
