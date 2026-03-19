@@ -9,15 +9,11 @@ import Tvshows from './pages/Tvshows.jsx';
 import MyList from './pages/MyList.jsx';
 import Profile from './pages/Profile.jsx';
 import Toast from './components/Toast.jsx';
-import Notifications from './components/Notifications.jsx';
 
 export default function App() {
   return (
     <div>
       <Toast />
-      <div className="fixed top-4 right-4 z-60 hidden md:block">
-        <Notifications />
-      </div>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} />

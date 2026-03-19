@@ -10,6 +10,7 @@ import {
   clearFavorites,
   clearWishlist,
 } from '../lib/myList';
+import Notifications from '../components/Notifications.jsx';
 
 export default function MyList() {
   const [favs, setFavs] = useState([]);
@@ -111,7 +112,7 @@ export default function MyList() {
         </div>
         <div className="flex items-center space-x-4">
           <div className="hidden md:block"><i className="fas fa-search hover:text-gray-300 cursor-pointer"></i></div>
-          <div className="hidden md:block"><i className="fas fa-bell hover:text-gray-300 cursor-pointer"></i></div>
+          <div className="hidden md:block"><Notifications /></div>
           <div className="flex items-center space-x-2 cursor-pointer group">
             <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-cineflix-red" />
             <i className="fas fa-caret-down hover:text-gray-300"></i>

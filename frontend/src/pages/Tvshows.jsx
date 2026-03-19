@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchJsonWithCache, prefetchImages } from '../lib/apiCache';
+import Notifications from '../components/Notifications.jsx';
 
 const API_BASE = 'http://localhost:8082/api/movies';
 
@@ -73,7 +74,7 @@ export default function Tvshows() {
         </div>
         <div className="flex items-center space-x-4">
           <div className="hidden md:block"><i className="fas fa-search hover:text-gray-300 cursor-pointer"></i></div>
-          <div className="hidden md:block"><i className="fas fa-bell hover:text-gray-300 cursor-pointer"></i></div>
+          <div className="hidden md:block"><Notifications /></div>
           <div className="flex items-center space-x-2 cursor-pointer group">
             <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-cineflix-red" />
             <i className="fas fa-caret-down hover:text-gray-300"></i>
