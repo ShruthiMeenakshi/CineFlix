@@ -174,13 +174,13 @@ export default function Home() {
           <img src={poster} alt={movie.Title} className="w-full h-64 object-cover" loading="lazy" />
 
           <div className="absolute top-2 right-2 flex space-x-2 z-20">
-            <button onClick={(e) => { e.stopPropagation(); if (!isLoggedIn) { setLoginModalOpen(true); return; } toggleWishlist(movie); setTimeout(() => window.dispatchEvent(new Event('storage')), 50); }} className={`bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 ${wishState ? 'text-movieshere-red' : 'text-white'}`} title="Toggle wishlist"><i className="fas fa-bookmark"></i></button>
-            <button onClick={(e) => { e.stopPropagation(); if (!isLoggedIn) { setLoginModalOpen(true); return; } toggleFavorite(movie); setTimeout(() => window.dispatchEvent(new Event('storage')), 50); }} className={`bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 ${favState ? 'text-movieshere-red' : 'text-white'}`} title="Toggle favourite"><i className="fas fa-heart"></i></button>
           </div>
 
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-end p-3">
             <div className="w-full flex justify-between items-end">
-              <button onClick={() => { if (!isLoggedIn) { setLoginModalOpen(true); return; } openDetails(movie.imdbID); }} className="bg-movieshere-red text-white px-3 py-1 rounded opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-200"><i className="fas fa-play mr-2"></i>Play</button>
+            <button onClick={(e) => { e.stopPropagation(); if (!isLoggedIn) { setLoginModalOpen(true); return; } toggleWishlist(movie); setTimeout(() => window.dispatchEvent(new Event('storage')), 50); }} className={`bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 ${wishState ? 'text-cineflix-red' : 'text-white'}`} title="Toggle wishlist"><i className="fas fa-bookmark"></i></button>
+            <button onClick={(e) => { e.stopPropagation(); if (!isLoggedIn) { setLoginModalOpen(true); return; } toggleFavorite(movie); setTimeout(() => window.dispatchEvent(new Event('storage')), 50); }} className={`bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 ${favState ? 'text-cineflix-red' : 'text-white'}`} title="Toggle favourite"><i className="fas fa-heart"></i></button>
+                            <button onClick={() => { if (!isLoggedIn) { setLoginModalOpen(true); return; } openDetails(movie.imdbID); }} className="bg-cineflix-red text-white px-3 py-1 rounded opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-200"><i className="fas fa-play mr-2"></i>Play</button>
               <Link to={`/movie/${encodeURIComponent(movie.Title)}`} onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); setLoginModalOpen(true); } }} className="bg-white text-black px-3 py-1 rounded opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-200">More Info</Link>
             </div>
           </div>
@@ -349,7 +349,7 @@ export default function Home() {
         </div>
 
         <div className="max-w-6xl mx-auto mt-8 border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between text-sm text-gray-400">
-          <div>© 2023 CineFlix, Inc.</div>
+          <div>© {new Date().getFullYear()} CineFlix, Inc.</div>
           <div className="flex items-center space-x-4 mt-3 md:mt-0">
             <button className="border border-gray-600 px-4 py-2 rounded hover:bg-gray-800">Service Code</button>
             <div className="text-gray-400">Made with ♥ for movie lovers</div>

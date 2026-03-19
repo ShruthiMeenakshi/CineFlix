@@ -91,7 +91,7 @@ export default function Movies() {
   }
 
   return (
-    <div className="bg-movieshere-dark text-white">
+    <div className="bg-cineflix-dark text-white">
       <style>{`
         .hero-gradient { background: linear-gradient(to top, rgba(20,20,20,1) 0%, rgba(20,20,20,0) 50%, rgba(20,20,20,1) 100%); }
         .swiper-button-next, .swiper-button-prev { color: #E50914 !important; background: rgba(0,0,0,0.5); width:40px !important; height:60px !important; border-radius:4px; transition: all 0.3s ease; opacity:0; }
@@ -158,7 +158,7 @@ export default function Movies() {
               <p className="text-gray-300 mb-4 max-w-2xl transition-all duration-300 group-hover:text-white">When the Riddler, a sadistic serial killer, begins murdering key political figures in Gotham, Batman is forced to investigate the city's hidden corruption and question his family's involvement.</p>
               <div className="flex space-x-4">
                 <button className="bg-white text-black px-6 py-2 rounded flex items-center hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105"><i className="fas fa-play mr-2"></i> Play</button>
-                <Link to="/movie/batman" className="bg-movieshere-gray bg-opacity-70 px-6 py-2 rounded flex items-center hover:bg-opacity-50 transition-all duration-300 transform hover:scale-105"><i className="fas fa-info-circle mr-2"></i> More Info</Link>
+                <Link to="/movie/batman" className="bg-cineflix-gray bg-opacity-70 px-6 py-2 rounded flex items-center hover:bg-opacity-50 transition-all duration-300 transform hover:scale-105"><i className="fas fa-info-circle mr-2"></i> More Info</Link>
               </div>
             </div>
           </div>
@@ -168,8 +168,8 @@ export default function Movies() {
           <div className="flex justify-between items-center mb-6">
             <h2 className="section-header text-xl md:text-2xl font-bold">Popular Movies</h2>
             <div className="flex space-x-4">
-              <div className="swiper-button-prev-popular hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red"><i className="fas fa-chevron-left text-2xl"></i></div>
-              <div className="swiper-button-next-popular hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red"><i className="fas fa-chevron-right text-2xl"></i></div>
+              <div className="swiper-button-prev-popular hidden md:block cursor-pointer transition-all duration-300 hover:text-cineflix-red"><i className="fas fa-chevron-left text-2xl"></i></div>
+              <div className="swiper-button-next-popular hidden md:block cursor-pointer transition-all duration-300 hover:text-cineflix-red"><i className="fas fa-chevron-right text-2xl"></i></div>
             </div>
           </div>
         </div>
@@ -240,8 +240,8 @@ export default function Movies() {
           <div className="flex justify-between items-center mb-6">
             <h2 className="section-header text-xl md:text-2xl font-bold">New Releases</h2>
             <div className="flex space-x-4">
-              <div className="swiper-button-prev-new hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red"><i className="fas fa-chevron-left text-2xl"></i></div>
-              <div className="swiper-button-next-new hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red"><i className="fas fa-chevron-right text-2xl"></i></div>
+              <div className="swiper-button-prev-new hidden md:block cursor-pointer transition-all duration-300 hover:text-cineflix-red"><i className="fas fa-chevron-left text-2xl"></i></div>
+              <div className="swiper-button-next-new hidden md:block cursor-pointer transition-all duration-300 hover:text-cineflix-red"><i className="fas fa-chevron-right text-2xl"></i></div>
             </div>
           </div>
 
@@ -250,10 +250,10 @@ export default function Movies() {
               {(posters.length ? posters.slice(4, 8) : [null, null, null, null]).map((p, i) => (
                 <div className="swiper-slide" key={i} style={{ width: 150 }}>
                   <div className="movie-card relative rounded overflow-hidden h-full">
-                    <div className="badge absolute top-2 left-2 bg-movieshere-red text-white text-xs font-bold px-2 py-1 rounded z-10 transition-transform">NEW</div>
+                    <div className="badge absolute top-2 left-2 bg-cineflix-red text-white text-xs font-bold px-2 py-1 rounded z-10 transition-transform">NEW</div>
                     <img src={p || 'https://via.placeholder.com/300x450?text=New'} alt={`New ${i}`} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                      <button className="play-button bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
+                      <button className="play-button bg-cineflix-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
                     </div>
                   </div>
                 </div>
@@ -266,8 +266,8 @@ export default function Movies() {
           <div className="flex justify-between items-center mb-6">
             <h2 className="section-header text-xl md:text-2xl font-bold">Award-Winning Movies</h2>
             <div className="flex space-x-4">
-              <div className="swiper-button-prev-awards hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red"><i className="fas fa-chevron-left text-2xl"></i></div>
-              <div className="swiper-button-next-awards hidden md:block cursor-pointer transition-all duration-300 hover:text-movieshere-red"><i className="fas fa-chevron-right text-2xl"></i></div>
+              <div className="swiper-button-prev-awards hidden md:block cursor-pointer transition-all duration-300 hover:text-cineflix-red"><i className="fas fa-chevron-left text-2xl"></i></div>
+              <div className="swiper-button-next-awards hidden md:block cursor-pointer transition-all duration-300 hover:text-cineflix-red"><i className="fas fa-chevron-right text-2xl"></i></div>
             </div>
           </div>
 
@@ -286,7 +286,7 @@ export default function Movies() {
                         <button onClick={(e) => { e.stopPropagation(); const obj = { poster: posterUrl || '', title, id }; import('../lib/myList').then(m => { m.toggleFavorite(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Favourite"><i className="fas fa-heart"></i></button>
                       </div>
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                        <button className="play-button bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
+                        <button className="play-button bg-cineflix-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
                       </div>
                     </div>
                   </div>
@@ -338,7 +338,7 @@ export default function Movies() {
         </div>
 
         <div className="max-w-6xl mx-auto mt-8 border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between text-sm text-gray-400">
-          <div>© 2023 CineFlix, Inc.</div>
+          <div>© {new Date().getFullYear()} CineFlix, Inc.</div>
           <div className="flex items-center space-x-4 mt-3 md:mt-0">
             <button className="border border-gray-600 px-4 py-2 rounded hover:bg-gray-800">Service Code</button>
             <div className="text-gray-400">Built for movie lovers</div>

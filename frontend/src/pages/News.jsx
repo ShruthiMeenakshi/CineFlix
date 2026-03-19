@@ -164,7 +164,7 @@ export default function News() {
         </div>
 
         <div className="max-w-6xl mx-auto mt-8 border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between text-sm text-gray-400">
-          <div>© 2023 CineFlix, Inc.</div>
+          <div>© {new Date().getFullYear()} CineFlix, Inc.</div>
           <div className="flex items-center space-x-4 mt-3 md:mt-0">
             <button className="border border-gray-600 px-4 py-2 rounded hover:bg-gray-800">Service Code</button>
             <div className="text-gray-400">Stay informed with CineFlix</div>

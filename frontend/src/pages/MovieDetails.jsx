@@ -73,11 +73,11 @@ export default function MovieDetails() {
         {/* Details column */}
         <div className="md:col-span-2">
           <h1 className="text-3xl md:text-4xl font-bold mb-2">{details.Title} <span className="text-gray-300 text-lg">({details.Year})</span></h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300 mb-4">
-            <span className="px-2 py-1 bg-movieshere-gray rounded">{details.Runtime}</span>
-            <span className="px-2 py-1 bg-movieshere-gray rounded">{details.Genre}</span>
-            <span className="px-2 py-1 bg-movieshere-gray rounded">{details.Rated}</span>
-            <span className="px-2 py-1 bg-movieshere-gray rounded">Released: {details.Released}</span>
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300 mb-4">
+            <span className="px-2 py-1 bg-cineflix-gray rounded">{details.Runtime}</span>
+            <span className="px-2 py-1 bg-cineflix-gray rounded">{details.Genre}</span>
+            <span className="px-2 py-1 bg-cineflix-gray rounded">{details.Rated}</span>
+            <span className="px-2 py-1 bg-cineflix-gray rounded">Released: {details.Released}</span>
           </div>
 
           <p className="text-gray-300 mb-6">{details.Plot}</p>

@@ -109,8 +109,8 @@ export default function Tvshows() {
         <div className="space-y-12">
           <div>
             <h2 className="text-xl font-bold mb-4">Popular TV Shows</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {(posters.length ? posters.slice(0,6) : Array.from({length:6})).map((p, i) => (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {(posters.length ? posters.slice(0,6) : Array.from({length:6})).map((p, i) => (
                   <div key={i} className="group relative rounded overflow-hidden">
                     <img src={posterOrPlaceholder(p, 'Popular')} alt={`Popular ${i}`} className="w-full h-40 md:h-56 object-cover transition-transform duration-300 group-hover:scale-105" />
                     <div className="absolute top-2 right-2 z-20 flex space-x-2">
@@ -132,7 +132,7 @@ export default function Tvshows() {
                 <div key={i} className="group relative rounded overflow-hidden">
                   <img src={posterOrPlaceholder(p, 'New')} alt={`New ${i}`} className="w-full h-40 md:h-56 object-cover transition-transform duration-300 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                    <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+                    <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-cineflix-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
                   </div>
                 </div>
               ))}
@@ -146,7 +146,7 @@ export default function Tvshows() {
                 <div key={i} className="group relative rounded overflow-hidden">
                   <img src={posterOrPlaceholder(p, 'Award')} alt={`Award ${i}`} className="w-full h-40 md:h-56 object-cover transition-transform duration-300 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                    <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-movieshere-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
+                    <button className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-cineflix-red text-white px-4 py-2 rounded"><i className="fas fa-play mr-2"></i> Play</button>
                   </div>
                 </div>
               ))}
@@ -195,7 +195,7 @@ export default function Tvshows() {
         </div>
 
         <div className="max-w-6xl mx-auto mt-8 border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between text-sm text-gray-400">
-          <div>© 2023 CineFlix, Inc.</div>
+          <div>© {new Date().getFullYear()} CineFlix, Inc.</div>
           <div className="flex items-center space-x-4 mt-3 md:mt-0">
             <button className="border border-gray-600 px-4 py-2 rounded hover:bg-gray-800">Service Code</button>
             <div className="text-gray-400">Enjoy your shows</div>

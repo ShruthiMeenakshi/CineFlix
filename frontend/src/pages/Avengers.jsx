@@ -10,10 +10,10 @@ export default function Avengers() {
     <div className="min-h-screen text-white bg-black">
       <nav className="fixed w-full z-50 bg-gradient-to-b from-black to-transparent px-4 md:px-12 py-4 flex justify-between items-center">
         <div className="flex items-center">
-          <a href="/movies" className="text-2xl font-bold text-movieshere-red hover:text-red-600 transition-colors duration-300">MOVIES<span className="text-white">HERE</span></a>
+          <a href="/movies" className="text-2xl font-bold text-cineflix-red hover:text-red-600 transition-colors duration-300">Cineflix</a>
         </div>
         <div className="flex items-center space-x-4">
-          <a href="/movies" className="px-3 py-2 bg-movieshere-gray rounded hover:bg-opacity-80">Back</a>
+          <a href="/movies" className="px-3 py-2 bg-cineflix-gray rounded hover:bg-opacity-80">Back</a>
           <div className="hidden md:block"><i className="fas fa-search hover:text-gray-300 cursor-pointer"></i></div>
           <div className="hidden md:block"><Notifications /></div>
           <div className="flex items-center space-x-2 cursor-pointer group">

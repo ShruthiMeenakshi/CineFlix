@@ -7,7 +7,7 @@ export default function Profile() {
   const [wish, setWish] = useState([]);
 
   useEffect(() => {
-    document.title = 'Profile | MoviesHere';
+    document.title = 'Profile | Cineflix';
     setFavs(getFavorites());
     setWish(getWishlist());
     const onStorage = () => { setFavs(getFavorites()); setWish(getWishlist()); };
@@ -16,7 +16,7 @@ export default function Profile() {
   }, []);
 
   return (
-    <div className="bg-movieshere-dark text-white min-h-screen px-4 md:px-12 pt-24">
+    <div className="bg-cineflix-dark text-white min-h-screen px-4 md:px-12 pt-24">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Sidebar */}
         <aside className="col-span-1 bg-black/20 rounded-lg p-6 sticky top-24">
@@ -28,11 +28,11 @@ export default function Profile() {
 
           <nav className="mt-6">
             <ul className="space-y-2">
-              <li><Link to="/profile" className="block px-3 py-2 rounded hover:bg-movieshere-gray">Dashboard</Link></li>
-              <li><Link to="/list" className="block px-3 py-2 rounded hover:bg-movieshere-gray">My List</Link></li>
-              <li><Link to="/movies" className="block px-3 py-2 rounded hover:bg-movieshere-gray">Browse Movies</Link></li>
-              <li><Link to="/tvshows" className="block px-3 py-2 rounded hover:bg-movieshere-gray">Browse TV Shows</Link></li>
-              <li><button className="w-full text-left px-3 py-2 rounded hover:bg-movieshere-gray">Sign out</button></li>
+              <li><Link to="/profile" className="block px-3 py-2 rounded hover:bg-cineflix-gray">Dashboard</Link></li>
+              <li><Link to="/list" className="block px-3 py-2 rounded hover:bg-cineflix-gray">My List</Link></li>
+              <li><Link to="/movies" className="block px-3 py-2 rounded hover:bg-cineflix-gray">Browse Movies</Link></li>
+              <li><Link to="/tvshows" className="block px-3 py-2 rounded hover:bg-cineflix-gray">Browse TV Shows</Link></li>
+              <li><button className="w-full text-left px-3 py-2 rounded hover:bg-cineflix-gray">Sign out</button></li>
             </ul>
           </nav>
 
@@ -89,9 +89,9 @@ export default function Profile() {
             <div className="bg-black/20 rounded-lg p-4">
               <h3 className="font-semibold mb-2">Preferences</h3>
               <div className="flex flex-col gap-2">
-                <button className="bg-movieshere-gray px-3 py-2 rounded text-left">Edit Profile</button>
-                <button className="bg-movieshere-gray px-3 py-2 rounded text-left">Manage Payment</button>
-                <button className="bg-movieshere-gray px-3 py-2 rounded text-left">Playback Settings</button>
+                <button className="bg-cineflix-gray px-3 py-2 rounded text-left">Edit Profile</button>
+                <button className="bg-cineflix-gray px-3 py-2 rounded text-left">Manage Payment</button>
+                <button className="bg-cineflix-gray px-3 py-2 rounded text-left">Playback Settings</button>
               </div>
             </div>
           </div>
