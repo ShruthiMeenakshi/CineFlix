@@ -6,9 +6,9 @@ WORKDIR /app
 ARG VITE_API_URL
 ARG VITE_OMDB_API_KEY
 
-# install dependencies
+# install dependencies (include devDependencies needed for the build)
 COPY package.json package-lock.json* ./
-RUN npm ci --only=production || npm ci
+RUN npm ci
 
 # copy source
 COPY . .
