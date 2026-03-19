@@ -9,6 +9,7 @@ import Tvshows from './pages/Tvshows.jsx';
 import MyList from './pages/MyList.jsx';
 import Profile from './pages/Profile.jsx';
 import Toast from './components/Toast.jsx';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/list" element={<MyList />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
+      <Analytics />
     </div>
   );
 }
