@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchJsonWithCache, prefetchImages } from '../lib/apiCache';
+import { API_BASE_MOVIES as API_BASE } from '../lib/config';
 import Notifications from '../components/Notifications.jsx';
 
 export default function Movies() {
@@ -18,7 +19,7 @@ export default function Movies() {
   useEffect(() => {
     async function loadPosters() {
       try {
-        const url = 'http://localhost:8082/api/movies/random-posters?count=12';
+        const url = `${API_BASE}/random-posters?count=12`;
         const data = await fetchJsonWithCache(url);
         if (Array.isArray(data) && data.length) {
           const normalized = data.map((u, i) => ({ Poster: u, Title: `Poster ${i + 1}`, imdbID: `poster-${i}` }));
@@ -59,7 +60,7 @@ export default function Movies() {
     if (cat === 'All') {
       // reload random posters
       try {
-        const res = await fetch('http://localhost:8082/api/movies/random-posters?count=12');
+        const res = await fetch(`${API_BASE}/random-posters?count=12`);
         const data = await res.json();
         if (Array.isArray(data) && data.length) {
           const normalized = data.map((u, i) => ({ Poster: u, Title: `Poster ${i + 1}`, imdbID: `poster-${i}` }));
@@ -74,7 +75,7 @@ export default function Movies() {
 
     // search OMDB for this category as keyword, restrict to movies
     try {
-      const url = `http://localhost:8082/api/movies/search?query=${encodeURIComponent(cat)}&page=1&type=movie`;
+      const url = `${API_BASE}/search?query=${encodeURIComponent(cat)}&page=1&type=movie`;
       const data = await fetchJsonWithCache(url);
       if (data && Array.isArray(data.Search) && data.Search.length) {
         setPosters(data.Search);

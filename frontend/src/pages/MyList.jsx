@@ -18,13 +18,30 @@ export default function MyList() {
   const [favFilter, setFavFilter] = useState('');
   const [wishFilter, setWishFilter] = useState('');
   const fileInputRef = useRef(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     setFavs(getFavorites());
     setWish(getWishlist());
     const onStorage = () => { setFavs(getFavorites()); setWish(getWishlist()); };
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    // restore simple login state
+    try {
+      const stored = localStorage.getItem('cineflix_user');
+      if (stored) {
+        setUser(JSON.parse(stored));
+        setIsLoggedIn(true);
+      }
+    } catch (e) { /* ignore */ }
+    const authListener = () => {
+      try {
+        const s = localStorage.getItem('cineflix_user');
+        if (s) { setUser(JSON.parse(s)); setIsLoggedIn(true); } else { setUser(null); setIsLoggedIn(false); }
+      } catch (e) { setUser(null); setIsLoggedIn(false); }
+    };
+    window.addEventListener('storage', authListener);
+    return () => { window.removeEventListener('storage', onStorage); window.removeEventListener('storage', authListener); };
   }, []);
 
   function removeFromFav(id) { removeFavorite(id); setFavs(getFavorites()); }
@@ -113,9 +130,21 @@ export default function MyList() {
         <div className="flex items-center space-x-4">
           <div className="hidden md:block"><i className="fas fa-search hover:text-gray-300 cursor-pointer"></i></div>
           <div className="hidden md:block"><Notifications /></div>
-          <div className="flex items-center space-x-2 cursor-pointer group">
-            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-cineflix-red" />
-            <i className="fas fa-caret-down hover:text-gray-300"></i>
+          <div className="flex items-center space-x-2">
+            {isLoggedIn ? (
+              <div className="flex items-center space-x-2 cursor-pointer group">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-cineflix-red" />
+                <div className="hidden md:flex items-center space-x-2">
+                  <span className="text-sm text-gray-300">Hi, {user?.username}</span>
+                  <button onClick={() => { localStorage.removeItem('cineflix_user'); setUser(null); setIsLoggedIn(false); window.dispatchEvent(new Event('storage')); }} className="text-gray-300 hover:text-white" title="Logout"><i className="fas fa-sign-out-alt"></i></button>
+                </div>
+                <i className="fas fa-caret-down hover:text-gray-300"></i>
+              </div>
+            ) : (
+              <a href="/" className="flex items-center space-x-2 text-gray-300 hover:text-white" title="Login">
+                <i className="fas fa-user text-xl"></i>
+              </a>
+            )}
           </div>
         </div>
       </nav>

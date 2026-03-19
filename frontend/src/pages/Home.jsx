@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Notifications from '../components/Notifications.jsx';
 import { Link } from 'react-router-dom';
+import { API_BASE_MOVIES } from '../lib/config';
 import { toggleFavorite, toggleWishlist, isFavorite, isWishlisted } from '../lib/myList';
 
-const API_BASE_URL = 'http://localhost:8082/api/movies';
+const API_BASE_URL = API_BASE_MOVIES;
 
 export default function Home() {
   const [listVersion, setListVersion] = useState(0);

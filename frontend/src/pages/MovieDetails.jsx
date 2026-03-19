@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { API_BASE_MOVIES as API_BASE } from '../lib/config';
 
 export default function MovieDetails() {
   const { title } = useParams();
@@ -14,7 +15,7 @@ export default function MovieDetails() {
       setLoading(true);
       setError(null);
       try {
-        const sRes = await fetch(`http://localhost:8082/api/movies/search?query=${encodeURIComponent(title)}&page=1`);
+        const sRes = await fetch(`${API_BASE}/search?query=${encodeURIComponent(title)}&page=1`);
         const sJson = await sRes.json();
 
         let imdb = null;
@@ -26,7 +27,7 @@ export default function MovieDetails() {
           throw new Error('No movie found for: ' + title);
         }
 
-        const dRes = await fetch(`http://localhost:8082/api/movies/${imdb}`);
+        const dRes = await fetch(`${API_BASE}/${imdb}`);
         const dJson = await dRes.json();
         setDetails(dJson);
       } catch (e) {

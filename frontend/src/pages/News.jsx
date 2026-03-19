@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchJsonWithCache, prefetchImages } from '../lib/apiCache';
 import Notifications from '../components/Notifications.jsx';
-
-const API_BASE = 'http://localhost:8082/api/movies';
+import { API_BASE_MOVIES as API_BASE } from '../lib/config';
 
 export default function News() {
   const [recent, setRecent] = useState([]);
