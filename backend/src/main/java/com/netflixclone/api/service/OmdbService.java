@@ -28,15 +28,28 @@ public class OmdbService {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public String searchMovies(String query, int page) {
+    public String searchMovies(String query, int page, String type, String year) {
         try {
             String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
-            String url = BASE_URL + "?apikey=" + API_KEY + "&s=" + encodedQuery + "&page=" + page;
+            StringBuilder url = new StringBuilder(BASE_URL)
+                    .append("?apikey=")
+                    .append(API_KEY)
+                    .append("&s=")
+                    .append(encodedQuery)
+                    .append("&page=")
+                    .append(page);
+
+            if (type != null && !type.isBlank()) {
+                url.append("&type=").append(URLEncoder.encode(type, StandardCharsets.UTF_8));
+            }
+            if (year != null && !year.isBlank()) {
+                url.append("&y=").append(URLEncoder.encode(year, StandardCharsets.UTF_8));
+            }
 
             System.out.println("Calling URL: " + url);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
+                    .uri(URI.create(url.toString()))
                     .timeout(Duration.ofSeconds(10))
                     .GET()
                     .build();

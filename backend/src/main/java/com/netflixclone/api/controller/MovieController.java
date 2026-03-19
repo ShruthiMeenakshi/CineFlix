@@ -15,8 +15,10 @@ public class MovieController {
 
     @GetMapping("/search")
     public String searchMovies(@RequestParam String query,
-                               @RequestParam(defaultValue = "1") int page) {
-        return omdbService.searchMovies(query, page);
+                               @RequestParam(defaultValue = "1") int page,
+                               @RequestParam(required = false) String type,
+                               @RequestParam(required = false) String year) {
+        return omdbService.searchMovies(query, page, type, year);
     }
 
     @GetMapping("/{id}")
