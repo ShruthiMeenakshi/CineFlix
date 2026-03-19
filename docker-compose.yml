@@ -1,10 +1,23 @@
 services:
+  mongodb:
+    image: mongo:7
+    container_name: cineflix-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
       - "8082:8082"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/cineflix
+    depends_on:
+      - mongodb
     restart: unless-stopped
 
   frontend:
@@ -12,10 +25,13 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: http://backend:8082/api
+        VITE_API_URL: http://localhost:8082/api
         VITE_OMDB_API_KEY: 73370347
     ports:
       - "3000:80"
     depends_on:
       - backend
     restart: unless-stopped
+
+volumes:
+  mongodb_data:
