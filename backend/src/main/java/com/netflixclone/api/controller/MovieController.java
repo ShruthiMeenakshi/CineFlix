@@ -5,13 +5,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/movies")
-@CrossOrigin(origins = {
-        "http://127.0.0.1:5500",
-        "http://localhost:5500",
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "https://cine-flix-topaz.vercel.app"
-})
 public class MovieController {
 
     private final OmdbService omdbService;
