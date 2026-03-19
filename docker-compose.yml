@@ -15,7 +15,7 @@ services:
         VITE_API_URL: http://backend:8082/api
         VITE_OMDB_API_KEY: 73370347
     ports:
-      - "8080:80"
+      - "3000:80"
     depends_on:
       - backend
     restart: unless-stopped
