@@ -209,6 +209,7 @@ export default function Home() {
             <i className="fas fa-search text-gray-300 mr-2"></i>
             <input value={navbarQuery} onChange={(e) => setNavbarQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { setQuery(navbarQuery); searchMovies(navbarQuery, 1); } }} id="navbarSearchInput" type="text" placeholder="Search movies..." className="bg-transparent text-sm focus:outline-none w-48" />
           </div>
+          <div className="hidden md:block"><i className="fas fa-bell hover:text-gray-300 cursor-pointer"></i></div>
           <div className="flex items-center space-x-2">
             {isLoggedIn ? (
               <div className="flex items-center space-x-2">
