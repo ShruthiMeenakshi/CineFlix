@@ -5,5 +5,3 @@ build
 .git
 .vscode
 npm-debug.log
-Dockerfile
-nginx.conf
