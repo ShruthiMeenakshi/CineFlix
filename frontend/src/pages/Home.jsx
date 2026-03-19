@@ -16,6 +16,11 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
   const [curatedMovies, setCuratedMovies] = useState([]);
+  // authentication state (simple client-side mock)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
 
   useEffect(() => {
     document.title = 'CineFlix - Home';
@@ -54,6 +59,18 @@ export default function Home() {
     window.addEventListener('storage', onUpdate);
     window.addEventListener('mylist:change', onUpdate);
     return () => { window.removeEventListener('storage', onUpdate); window.removeEventListener('mylist:change', onUpdate); };
+  }, []);
+
+  useEffect(() => {
+    // restore simple login from localStorage
+    try {
+      const stored = localStorage.getItem('cineflix_user');
+      if (stored) {
+        const u = JSON.parse(stored);
+        setUser(u);
+        setIsLoggedIn(true);
+      }
+    } catch (e) { /* ignore */ }
   }, []);
 
   async function searchMovies(q, p = 1) {
@@ -122,24 +139,47 @@ export default function Home() {
     }
   }
 
+  function handleLoginSubmit(e) {
+    e.preventDefault();
+    const uname = (loginForm.username || '').trim();
+    if (!uname) {
+      setSearchStatus('Please enter a username to login.');
+      return;
+    }
+    // simple mock login: persist username locally
+    const u = { username: uname };
+    localStorage.setItem('cineflix_user', JSON.stringify(u));
+    setUser(u);
+    setIsLoggedIn(true);
+    setLoginModalOpen(false);
+    setSearchStatus('');
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('cineflix_user');
+    setUser(null);
+    setIsLoggedIn(false);
+  }
+
   function renderMovieCard(movie) {
     const poster = movie.Poster && movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x445?text=No+Poster';
     const id = movie.imdbID;
-    const [favState, setFavState] = [isFavorite(id), isWishlisted(id)];
+    const favState = isFavorite(id);
+    const wishState = isWishlisted(id);
     return (
       <div key={`${movie.imdbID}-${movie.Year}`} className="bg-black/40 rounded overflow-hidden movie-card">
         <div className="relative group">
           <img src={poster} alt={movie.Title} className="w-full h-64 object-cover" loading="lazy" />
 
           <div className="absolute top-2 right-2 flex space-x-2 z-20">
-            <button onClick={(e) => { e.stopPropagation(); toggleWishlist(movie); setTimeout(() => window.dispatchEvent(new Event('storage')), 50); }} className={`bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 ${isWishlisted(id) ? 'text-movieshere-red' : 'text-white'}`} title="Toggle wishlist"><i className="fas fa-bookmark"></i></button>
-            <button onClick={(e) => { e.stopPropagation(); toggleFavorite(movie); setTimeout(() => window.dispatchEvent(new Event('storage')), 50); }} className={`bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 ${isFavorite(id) ? 'text-movieshere-red' : 'text-white'}`} title="Toggle favourite"><i className="fas fa-heart"></i></button>
+            <button onClick={(e) => { e.stopPropagation(); if (!isLoggedIn) { setLoginModalOpen(true); return; } toggleWishlist(movie); setTimeout(() => window.dispatchEvent(new Event('storage')), 50); }} className={`bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 ${wishState ? 'text-movieshere-red' : 'text-white'}`} title="Toggle wishlist"><i className="fas fa-bookmark"></i></button>
+            <button onClick={(e) => { e.stopPropagation(); if (!isLoggedIn) { setLoginModalOpen(true); return; } toggleFavorite(movie); setTimeout(() => window.dispatchEvent(new Event('storage')), 50); }} className={`bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 ${favState ? 'text-movieshere-red' : 'text-white'}`} title="Toggle favourite"><i className="fas fa-heart"></i></button>
           </div>
 
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-end p-3">
             <div className="w-full flex justify-between items-end">
-              <button onClick={() => openDetails(movie.imdbID)} className="bg-movieshere-red text-white px-3 py-1 rounded opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-200"><i className="fas fa-play mr-2"></i>Play</button>
-              <Link to={`/movie/${encodeURIComponent(movie.Title)}`} className="bg-white text-black px-3 py-1 rounded opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-200">More Info</Link>
+              <button onClick={() => { if (!isLoggedIn) { setLoginModalOpen(true); return; } openDetails(movie.imdbID); }} className="bg-movieshere-red text-white px-3 py-1 rounded opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-200"><i className="fas fa-play mr-2"></i>Play</button>
+              <Link to={`/movie/${encodeURIComponent(movie.Title)}`} onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); setLoginModalOpen(true); } }} className="bg-white text-black px-3 py-1 rounded opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-200">More Info</Link>
             </div>
           </div>
         </div>
@@ -169,10 +209,21 @@ export default function Home() {
             <i className="fas fa-search text-gray-300 mr-2"></i>
             <input value={navbarQuery} onChange={(e) => setNavbarQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { setQuery(navbarQuery); searchMovies(navbarQuery, 1); } }} id="navbarSearchInput" type="text" placeholder="Search movies..." className="bg-transparent text-sm focus:outline-none w-48" />
           </div>
-          <Link to="/profile" className="flex items-center space-x-2 cursor-pointer">
-            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded" />
-            <i className="fas fa-caret-down hover:text-gray-300"></i>
-          </Link>
+          <div className="flex items-center space-x-2">
+            {isLoggedIn ? (
+              <div className="flex items-center space-x-2">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded" />
+                <div className="hidden md:flex items-center space-x-2">
+                  <span className="text-sm text-gray-300">Hi, {user?.username}</span>
+                  <button onClick={handleLogout} className="text-gray-300 hover:text-white" title="Logout"><i className="fas fa-sign-out-alt"></i></button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={() => setLoginModalOpen(true)} className="flex items-center space-x-2 text-gray-300 hover:text-white" title="Login">
+                <i className="fas fa-user text-xl"></i>
+              </button>
+            )}
+          </div>
         </div>
       </nav>
 
@@ -296,6 +347,24 @@ export default function Home() {
       </footer>
 
       {/* Modal */}
+      {loginModalOpen && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[9998]">
+          <div className="bg-cineflix-dark rounded-lg max-w-md w-full p-6 relative z-50">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-white">Sign in to CineFlix</h3>
+              <button onClick={() => setLoginModalOpen(false)} className="text-gray-300">Close</button>
+            </div>
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <input value={loginForm.username} onChange={(e) => setLoginForm(f => ({ ...f, username: e.target.value }))} placeholder="Username" className="w-full px-3 py-2 rounded bg-gray-800 text-white" />
+              <input type="password" value={loginForm.password} onChange={(e) => setLoginForm(f => ({ ...f, password: e.target.value }))} placeholder="Password" className="w-full px-3 py-2 rounded bg-gray-800 text-white" />
+              <div className="flex justify-end space-x-2">
+                <button type="button" onClick={() => setLoginModalOpen(false)} className="px-4 py-2 border rounded text-gray-200">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-cineflix-red text-white rounded">Sign In</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       {modalOpen && modalData && (
         <div id="movieModal" className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[9999]">
           <div className="bg-cineflix-dark rounded-lg max-w-2xl w-full overflow-auto relative z-50">
