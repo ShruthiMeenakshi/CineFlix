@@ -305,46 +305,54 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black text-gray-400 px-4 md:px-12 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex mb-6">
-            <a href="#" className="mr-4"><i className="fab fa-facebook text-2xl hover:text-white"></i></a>
-            <a href="#" className="mr-4"><i className="fab fa-instagram text-2xl hover:text-white"></i></a>
-            <a href="#" className="mr-4"><i className="fab fa-twitter text-2xl hover:text-white"></i></a>
-            <a href="#" className="mr-4"><i className="fab fa-youtube text-2xl hover:text-white"></i></a>
+      <footer className="bg-gradient-to-t from-black via-gray-900 to-transparent text-gray-300 px-4 md:px-12 py-10 border-t border-gray-600">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
+          <div>
+            <a href="#" className="text-2xl font-bold text-cineflix-red">CineFlix</a>
+            <p className="mt-3 text-sm text-gray-400">Stream your favorite movies and shows. Personalized recommendations and easy list management.</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <ul className="space-y-3">
-                <li><a href="#" className="hover:text-white">Audio Description</a></li>
-                <li><a href="#" className="hover:text-white">Investor Relations</a></li>
-                <li><a href="#" className="hover:text-white">Legal Notices</a></li>
-              </ul>
-            </div>
-            <div>
-              <ul className="space-y-3">
-                <li><a href="#" className="hover:text-white">Help Center</a></li>
-                <li><a href="#" className="hover:text-white">Jobs</a></li>
-                <li><a href="#" className="hover:text-white">Cookie Preferences</a></li>
-              </ul>
-            </div>
-            <div>
-              <ul className="space-y-3">
-                <li><a href="#" className="hover:text-white">Gift Cards</a></li>
-                <li><a href="#" className="hover:text-white">Terms of Use</a></li>
-                <li><a href="#" className="hover:text-white">Corporate Information</a></li>
-              </ul>
-            </div>
-            <div>
-              <ul className="space-y-3">
-                <li><a href="#" className="hover:text-white">Media Center</a></li>
-                <li><a href="#" className="hover:text-white">Privacy</a></li>
-                <li><a href="#" className="hover:text-white">Contact Us</a></li>
-              </ul>
+
+          <div>
+            <h4 className="font-semibold mb-3">Explore</h4>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li><a href="/movies" className="hover:text-white">Movies</a></li>
+              <li><a href="/tvshows" className="hover:text-white">TV Shows</a></li>
+              <li><a href="/news" className="hover:text-white">New & Popular</a></li>
+              <li><a href="/list" className="hover:text-white">My List</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-3">Support</h4>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li><a href="#" className="hover:text-white">Help Center</a></li>
+              <li><a href="#" className="hover:text-white">Contact Us</a></li>
+              <li><a href="#" className="hover:text-white">Privacy & Terms</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-3">Stay in the loop</h4>
+            <p className="text-sm text-gray-400 mb-3">Subscribe for updates and recommendations.</p>
+            <form onSubmit={(e)=>{e.preventDefault(); setSearchStatus('Subscribed!');}} className="flex gap-2">
+              <input type="email" placeholder="Email address" className="flex-1 px-3 py-2 rounded bg-gray-800 text-white text-sm" />
+              <button className="bg-cineflix-red px-4 py-2 rounded text-white text-sm">Subscribe</button>
+            </form>
+            <div className="flex items-center space-x-3 mt-4">
+              <a href="#" className="text-gray-300 hover:text-white"><i className="fab fa-facebook text-2xl"></i></a>
+              <a href="#" className="text-gray-300 hover:text-white"><i className="fab fa-instagram text-2xl"></i></a>
+              <a href="#" className="text-gray-300 hover:text-white"><i className="fab fa-twitter text-2xl"></i></a>
+              <a href="#" className="text-gray-300 hover:text-white"><i className="fab fa-youtube text-2xl"></i></a>
             </div>
           </div>
-          <button className="border border-gray-400 px-4 py-2 mb-6 hover:text-white">Service Code</button>
-          <p className="text-sm">© 2023 CineFlix, Inc.</p>
+        </div>
+
+        <div className="max-w-6xl mx-auto mt-8 border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between text-sm text-gray-400">
+          <div>© 2023 CineFlix, Inc.</div>
+          <div className="flex items-center space-x-4 mt-3 md:mt-0">
+            <button className="border border-gray-600 px-4 py-2 rounded hover:bg-gray-800">Service Code</button>
+            <div className="text-gray-400">Made with ♥ for movie lovers</div>
+          </div>
         </div>
       </footer>
 

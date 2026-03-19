@@ -297,46 +297,51 @@ export default function Movies() {
         </div>
       </section>
 
-      <footer className="bg-black text-gray-400 px-4 md:px-12 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex mb-6 space-x-6">
-            <a href="#" className="hover:text-white transition-colors duration-300 transform hover:scale-110"><i className="fab fa-facebook text-2xl"></i></a>
-            <a href="#" className="hover:text-white transition-colors duration-300 transform hover:scale-110"><i className="fab fa-instagram text-2xl"></i></a>
-            <a href="#" className="hover:text-white transition-colors duration-300 transform hover:scale-110"><i className="fab fa-twitter text-2xl"></i></a>
-            <a href="#" className="hover:text-white transition-colors duration-300 transform hover:scale-110"><i className="fab fa-youtube text-2xl"></i></a>
+      <footer className="bg-gradient-to-t from-black via-gray-900 to-transparent text-gray-300 px-4 md:px-12 py-10 border-t border-gray-600">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
+          <div>
+            <a href="/" className="text-2xl font-bold text-cineflix-red">CineFlix</a>
+            <p className="mt-3 text-sm text-gray-400">A better way to discover and save movies you love.</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <ul className="space-y-3">
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Audio Description</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Investor Relations</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Legal Notices</a></li>
-              </ul>
-            </div>
-            <div>
-              <ul className="space-y-3">
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Jobs</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Cookie Preferences</a></li>
-              </ul>
-            </div>
-            <div>
-              <ul className="space-y-3">
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Gift Cards</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Terms of Use</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Corporate Information</a></li>
-              </ul>
-            </div>
-            <div>
-              <ul className="space-y-3">
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Media Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Privacy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Contact Us</a></li>
-              </ul>
+
+          <div>
+            <h4 className="font-semibold mb-3">Browse</h4>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li><a href="/movies" className="hover:text-white">All Movies</a></li>
+              <li><a href="/tvshows" className="hover:text-white">TV Shows</a></li>
+              <li><a href="/news" className="hover:text-white">New & Popular</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-3">Help</h4>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li><a href="#" className="hover:text-white">Help Center</a></li>
+              <li><a href="#" className="hover:text-white">Terms</a></li>
+              <li><a href="#" className="hover:text-white">Privacy</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-3">Newsletter</h4>
+            <form onSubmit={(e)=>{e.preventDefault(); alert('Subscribed');}} className="flex gap-2">
+              <input type="email" placeholder="Email" className="flex-1 px-3 py-2 rounded bg-gray-800 text-white text-sm" />
+              <button className="bg-cineflix-red px-4 py-2 rounded text-white text-sm">Subscribe</button>
+            </form>
+            <div className="flex items-center space-x-3 mt-4">
+              <a href="#" className="text-gray-300 hover:text-white"><i className="fab fa-facebook text-2xl"></i></a>
+              <a href="#" className="text-gray-300 hover:text-white"><i className="fab fa-instagram text-2xl"></i></a>
+              <a href="#" className="text-gray-300 hover:text-white"><i className="fab fa-twitter text-2xl"></i></a>
             </div>
           </div>
-          <button className="border border-gray-400 px-4 py-2 mb-6 hover:text-white hover:border-white transition-all duration-300">Service Code</button>
-          <p className="text-sm">© 2023 MoviesHere, Inc.</p>
+        </div>
+
+        <div className="max-w-6xl mx-auto mt-8 border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between text-sm text-gray-400">
+          <div>© 2023 CineFlix, Inc.</div>
+          <div className="flex items-center space-x-4 mt-3 md:mt-0">
+            <button className="border border-gray-600 px-4 py-2 rounded hover:bg-gray-800">Service Code</button>
+            <div className="text-gray-400">Built for movie lovers</div>
+          </div>
         </div>
       </footer>
     </div>
