@@ -2,9 +2,8 @@ FROM maven:3.9.4-eclipse-temurin-17 AS build
 WORKDIR /app
 
 # copy maven files and source
-COPY pom.xml mvnw* ./
-COPY .mvn .mvn
-COPY src src
+COPY pom.xml ./
+COPY src ./src
 
 # build the application
 RUN mvn -B -DskipTests package
