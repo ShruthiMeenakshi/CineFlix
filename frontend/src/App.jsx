@@ -13,12 +13,14 @@ import Contact from './pages/Contact.jsx';
 import Privacy from './pages/Privacy.jsx';
 import Terms from './pages/Terms.jsx';
 import Toast from './components/Toast.jsx';
+import MobileMenu from './components/MobileMenu.jsx';
 import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   return (
     <div>
       <Toast />
+      <MobileMenu />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} />
