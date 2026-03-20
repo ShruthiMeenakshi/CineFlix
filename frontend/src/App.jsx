@@ -11,6 +11,7 @@ import Profile from './pages/Profile.jsx';
 import Help from './pages/Help.jsx';
 import Contact from './pages/Contact.jsx';
 import Privacy from './pages/Privacy.jsx';
+import Terms from './pages/Terms.jsx';
 import Toast from './components/Toast.jsx';
 import { Analytics } from '@vercel/analytics/react';
 
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/help" element={<Help />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/list" element={<MyList />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>

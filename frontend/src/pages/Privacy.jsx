@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import LegalFooter from '../components/legal/LegalFooter';
 
 export default function Privacy() {
   useEffect(() => { document.title = 'Privacy & Terms | CineFlix'; }, []);
@@ -26,6 +27,7 @@ export default function Privacy() {
           </section>
         </div>
       </div>
+      <LegalFooter />
     </div>
   );
 }

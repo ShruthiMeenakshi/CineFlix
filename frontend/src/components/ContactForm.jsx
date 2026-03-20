@@ -98,10 +98,34 @@ const ContactForm = ({ onSubmit }) => {
       return;
     }
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    onSubmit(formData);
-    setIsSubmitting(false);
-    setFormData({ name: '', email: '', subject: '', message: '', category: 'general', attachments: [] });
+    try {
+      // send to backend API (no attachments for now)
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        category: formData.category
+      };
+
+      const res = await fetch('http://localhost:8080/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error('Failed to submit message');
+
+      const data = await res.json();
+      onSubmit(data);
+      setFormData({ name: '', email: '', subject: '', message: '', category: 'general', attachments: [] });
+    } catch (err) {
+      console.error('Contact submit error', err);
+      // show inline error (basic)
+      setErrors(prev => ({ ...prev, _submit: 'Failed to send message. Please try again later.' }));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
