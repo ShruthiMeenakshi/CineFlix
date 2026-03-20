@@ -20,6 +20,10 @@ public class ContactController {
         this.contactService = contactService;
     }
 
+ @GetMapping
+public ResponseEntity<?> getAllContacts() {
+    return ResponseEntity.ok(contactService.getAllContacts());
+}
     @PostMapping(consumes = { "multipart/form-data" })
     public ResponseEntity<ContactUs> submitContact(
             @RequestParam String name,

@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -25,7 +26,9 @@ public class ContactService {
             "Partnership",
             "Other"
     );
-
+public List<ContactUs> getAllContacts() {
+    return repo.findAll();
+}
     public ContactService(ContactUsRepository repo, GridFsTemplate gridFsTemplate) {
         this.repo = repo;
         this.gridFsTemplate = gridFsTemplate;

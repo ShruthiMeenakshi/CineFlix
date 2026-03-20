@@ -25,6 +25,7 @@ public class AuthController {
 
     record SignupRequest(String username, String email, String password) {}
 
+    @SuppressWarnings("null")
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
         try {
