@@ -7,8 +7,37 @@ import { API_BASE_MOVIES as API_BASE } from '../lib/config';
 export default function News() {
   const [recent, setRecent] = useState([]);
   const [trending, setTrending] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
 
   useEffect(() => { document.title = 'New & Popular | CineFlix'; }, []);
+
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem('cineflix_user');
+      if (s) { setUser(JSON.parse(s)); setIsLoggedIn(true); } else { setUser(null); setIsLoggedIn(false); }
+    } catch (e) { setUser(null); setIsLoggedIn(false); }
+  }, []);
+
+  function handleLoginSubmit(e) {
+    e.preventDefault();
+    const uname = (loginForm.username || '').trim();
+    if (!uname) return;
+    const u = { username: uname };
+    localStorage.setItem('cineflix_user', JSON.stringify(u));
+    setUser(u);
+    setIsLoggedIn(true);
+    setLoginModalOpen(false);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('cineflix_user');
+    setUser(null);
+    setIsLoggedIn(false);
+    window.dispatchEvent(new Event('storage'));
+  }
 
   useEffect(() => {
     async function loadRecent() {
@@ -66,9 +95,20 @@ export default function News() {
         <div className="flex items-center space-x-4">
           <div className="hidden md:block"><i className="fas fa-search hover:text-gray-300 cursor-pointer"></i></div>
           <div className="hidden md:block"><Notifications /></div>
-          <div className="flex items-center space-x-2 cursor-pointer group">
-            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-cineflix-red" />
-            <i className="fas fa-caret-down hover:text-gray-300"></i>
+          <div className="flex items-center space-x-2">
+            {isLoggedIn ? (
+              <div className="flex items-center space-x-2">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded" />
+                <div className="hidden md:flex items-center space-x-2">
+                  <span className="text-sm text-gray-300">Hi, {user?.username}</span>
+                  <button onClick={handleLogout} className="text-gray-300 hover:text-white" title="Logout"><i className="fas fa-sign-out-alt"></i></button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={() => setLoginModalOpen(true)} className="flex items-center space-x-2 text-gray-300 hover:text-white" title="Login">
+                <i className="fas fa-user text-xl"></i>
+              </button>
+            )}
           </div>
         </div>
       </nav>
@@ -93,9 +133,12 @@ export default function News() {
                 <div key={item.imdbID} className="group relative rounded overflow-hidden">
                   <div className="absolute top-2 left-2 bg-cineflix-red text-white text-xs font-bold px-2 py-1 rounded z-10">NEW</div>
                   <img src={posterOrPlaceholder(item.Poster, item.Title)} alt={item.Title} className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                    <Link to={`/movie/${encodeURIComponent(item.Title)}`} className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-cineflix-red text-white px-4 py-2 rounded"><i className="fas fa-info-circle mr-2"></i> More Info</Link>
-                  </div>
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                      <div className="flex items-center gap-3">
+                        <Link to={`/movie/${encodeURIComponent(item.Title)}`} onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); setLoginModalOpen(true); } }} className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-cineflix-red text-white px-4 py-2 rounded flex items-center gap-2"><i className="fas fa-play"></i><span className="hidden md:inline">Play</span></Link>
+                        <Link to={`/movie/${encodeURIComponent(item.Title)}`} onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); setLoginModalOpen(true); } }} className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-white bg-opacity-10 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-opacity-20"><i className="fas fa-info-circle"></i><span className="hidden md:inline">More Info</span></Link>
+                      </div>
+                    </div>
                 </div>
               ))
             )}
@@ -113,9 +156,12 @@ export default function News() {
               trending.map(item => (
                 <div key={item.imdbID} className="group relative rounded overflow-hidden">
                   <img src={posterOrPlaceholder(item.Poster, item.Title)} alt={item.Title} className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                    <Link to={`/movie/${encodeURIComponent(item.Title)}`} className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-cineflix-red text-white px-4 py-2 rounded"><i className="fas fa-info-circle mr-2"></i> More Info</Link>
-                  </div>
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                      <div className="flex items-center gap-3">
+                        <Link to={`/movie/${encodeURIComponent(item.Title)}`} onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); setLoginModalOpen(true); } }} className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-cineflix-red text-white px-4 py-2 rounded flex items-center gap-2"><i className="fas fa-play"></i><span className="hidden md:inline">Play</span></Link>
+                        <Link to={`/movie/${encodeURIComponent(item.Title)}`} onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); setLoginModalOpen(true); } }} className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-white bg-opacity-10 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-opacity-20"><i className="fas fa-info-circle"></i><span className="hidden md:inline">More Info</span></Link>
+                      </div>
+                    </div>
                 </div>
               ))
             )}
@@ -142,9 +188,9 @@ export default function News() {
           <div>
             <h4 className="font-semibold mb-3">Support</h4>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><a href="#" className="hover:text-white">Help Center</a></li>
-              <li><a href="#" className="hover:text-white">Privacy & Terms</a></li>
-              <li><a href="#" className="hover:text-white">Contact Us</a></li>
+              <li><a href="/help" className="hover:text-white">Help Center</a></li>
+              <li><a href="/contact" className="hover:text-white">Contact Us</a></li>
+              <li><a href="/privacy" className="hover:text-white">Privacy & Terms</a></li>
             </ul>
           </div>
 
@@ -171,6 +217,24 @@ export default function News() {
           </div>
         </div>
       </footer>
+      {loginModalOpen && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[9998]">
+          <div className="bg-cineflix-dark rounded-lg max-w-md w-full p-6 relative z-50">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-white">Sign in to CineFlix</h3>
+              <button onClick={() => setLoginModalOpen(false)} className="text-gray-300">Close</button>
+            </div>
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <input value={loginForm.username} onChange={(e) => setLoginForm(f => ({ ...f, username: e.target.value }))} placeholder="Username" className="w-full px-3 py-2 rounded bg-gray-800 text-white" />
+              <input type="password" value={loginForm.password} onChange={(e) => setLoginForm(f => ({ ...f, password: e.target.value }))} placeholder="Password" className="w-full px-3 py-2 rounded bg-gray-800 text-white" />
+              <div className="flex justify-end space-x-2">
+                <button type="button" onClick={() => setLoginModalOpen(false)} className="px-4 py-2 border rounded text-gray-200">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-cineflix-red text-white rounded">Sign In</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

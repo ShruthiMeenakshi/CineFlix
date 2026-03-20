@@ -8,6 +8,9 @@ import MovieDetails from './pages/MovieDetails.jsx';
 import Tvshows from './pages/Tvshows.jsx';
 import MyList from './pages/MyList.jsx';
 import Profile from './pages/Profile.jsx';
+import Help from './pages/Help.jsx';
+import Contact from './pages/Contact.jsx';
+import Privacy from './pages/Privacy.jsx';
 import Toast from './components/Toast.jsx';
 import { Analytics } from '@vercel/analytics/react';
 
@@ -22,6 +25,9 @@ export default function App() {
         <Route path="/avengers" element={<Avengers />} />
         <Route path="/news" element={<News />} />
         <Route path="/movie/:title" element={<MovieDetails />} />
+        <Route path="/help" element={<Help />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/privacy" element={<Privacy />} />
         <Route path="/list" element={<MyList />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>

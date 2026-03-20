@@ -113,7 +113,7 @@ public class OmdbService {
             int page = 1 + rnd.nextInt(3);
 
             try {
-                String json = searchMovies(kw, page);
+                String json = searchMovies(kw, page, null, null);
                 JsonNode root = mapper.readTree(json);
 
                 if (root.has("Search")) {

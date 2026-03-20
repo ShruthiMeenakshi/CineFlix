@@ -7,13 +7,16 @@ import Notifications from '../components/Notifications.jsx';
 export default function Movies() {
   useEffect(() => {
     document.title = 'Movies | CineFlix';
-
     // initial swiper init will be handled after posters are loaded
   }, []);
 
   const [posters, setPosters] = useState([]);
   const [listVersion, setListVersion] = useState(0);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
 
   // fetch random posters from backend and initialize sliders
   useEffect(() => {
@@ -42,6 +45,31 @@ export default function Movies() {
     window.addEventListener('mylist:change', onUpdate);
     return () => { window.removeEventListener('storage', onUpdate); window.removeEventListener('mylist:change', onUpdate); };
   }, []);
+
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem('cineflix_user');
+      if (s) { setUser(JSON.parse(s)); setIsLoggedIn(true); } else { setUser(null); setIsLoggedIn(false); }
+    } catch (e) { setUser(null); setIsLoggedIn(false); }
+  }, []);
+
+  function handleLoginSubmit(e) {
+    e.preventDefault();
+    const uname = (loginForm.username || '').trim();
+    if (!uname) return;
+    const u = { username: uname };
+    localStorage.setItem('cineflix_user', JSON.stringify(u));
+    setUser(u);
+    setIsLoggedIn(true);
+    setLoginModalOpen(false);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('cineflix_user');
+    setUser(null);
+    setIsLoggedIn(false);
+    window.dispatchEvent(new Event('storage'));
+  }
 
   function initSwipers() {
     if (!window.Swiper) return;
@@ -132,9 +160,20 @@ export default function Movies() {
         <div className="flex items-center space-x-4">
           <div className="hidden md:block"><i className="fas fa-search hover:text-gray-300 cursor-pointer transition-colors duration-300"></i></div>
           <div className="hidden md:block"><Notifications /></div>
-          <div className="flex items-center space-x-2 cursor-pointer group">
-            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-cineflix-red" />
-            <i className="fas fa-caret-down hover:text-gray-300 transition-colors duration-300"></i>
+          <div className="flex items-center space-x-2">
+            {isLoggedIn ? (
+              <div className="flex items-center space-x-2">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded" />
+                <div className="hidden md:flex items-center space-x-2">
+                  <span className="text-sm text-gray-300">Hi, {user?.username}</span>
+                  <button onClick={handleLogout} className="text-gray-300 hover:text-white" title="Logout"><i className="fas fa-sign-out-alt"></i></button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={() => setLoginModalOpen(true)} className="flex items-center space-x-2 text-gray-300 hover:text-white" title="Login">
+                <i className="fas fa-user text-xl"></i>
+              </button>
+            )}
           </div>
         </div>
       </nav>
@@ -157,8 +196,8 @@ export default function Movies() {
               <h3 className="text-2xl md:text-3xl font-bold mb-2 transition-all duration-300 group-hover:text-cineflix-red">The Batman</h3>
               <p className="text-gray-300 mb-4 max-w-2xl transition-all duration-300 group-hover:text-white">When the Riddler, a sadistic serial killer, begins murdering key political figures in Gotham, Batman is forced to investigate the city's hidden corruption and question his family's involvement.</p>
               <div className="flex space-x-4">
-                <button className="bg-white text-black px-6 py-2 rounded flex items-center hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105"><i className="fas fa-play mr-2"></i> Play</button>
-                <Link to="/movie/batman" className="bg-cineflix-gray bg-opacity-70 px-6 py-2 rounded flex items-center hover:bg-opacity-50 transition-all duration-300 transform hover:scale-105"><i className="fas fa-info-circle mr-2"></i> More Info</Link>
+                <button onClick={() => { if (!isLoggedIn) { setLoginModalOpen(true); return; } }} className="bg-white text-black px-6 py-2 rounded flex items-center hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105"><i className="fas fa-play mr-2"></i> Play</button>
+                <Link to="/movie/batman" onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); setLoginModalOpen(true); } }} className="bg-cineflix-gray bg-opacity-70 px-6 py-2 rounded flex items-center hover:bg-opacity-50 transition-all duration-300 transform hover:scale-105"><i className="fas fa-info-circle mr-2"></i> More Info</Link>
               </div>
             </div>
           </div>
@@ -189,6 +228,7 @@ export default function Movies() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
+                        if (!isLoggedIn) { setLoginModalOpen(true); return; }
                         const obj = {
                           poster: p || '',
                           title: 'Unknown',
@@ -208,6 +248,7 @@ export default function Movies() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
+                        if (!isLoggedIn) { setLoginModalOpen(true); return; }
                         const obj = {
                           poster: p || '',
                           title: 'Unknown',
@@ -225,11 +266,18 @@ export default function Movies() {
                     </button>
                   </div>
 
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                    <button className="play-button bg-cineflix-red text-white px-4 py-2 rounded">
-                      <i className="fas fa-play"></i>
-                    </button>
-                  </div>
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => { if (!isLoggedIn) { setLoginModalOpen(true); return; } }} className="play-button bg-cineflix-red text-white px-4 py-2 rounded flex items-center gap-2">
+                          <i className="fas fa-play"></i>
+                          <span className="hidden md:inline">Play</span>
+                        </button>
+                        <Link to={`/movie/${encodeURIComponent(p || `movie-${i}`)}`} onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); setLoginModalOpen(true); } }} className="bg-white bg-opacity-10 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-opacity-20">
+                          <i className="fas fa-info-circle"></i>
+                          <span className="hidden md:inline">More Info</span>
+                        </Link>
+                      </div>
+                    </div>
                 </div>
               </div>
             ))}
@@ -253,7 +301,10 @@ export default function Movies() {
                     <div className="badge absolute top-2 left-2 bg-cineflix-red text-white text-xs font-bold px-2 py-1 rounded z-10 transition-transform">NEW</div>
                     <img src={p || 'https://via.placeholder.com/300x450?text=New'} alt={`New ${i}`} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                      <button className="play-button bg-cineflix-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => { if (!isLoggedIn) { setLoginModalOpen(true); return; } }} className="play-button bg-cineflix-red text-white px-4 py-2 rounded flex items-center gap-2"><i className="fas fa-play"></i><span className="hidden md:inline">Play</span></button>
+                        <Link to={`/movie/${encodeURIComponent(p || `new-${i}`)}`} onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); setLoginModalOpen(true); } }} className="bg-white bg-opacity-10 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-opacity-20"><i className="fas fa-info-circle"></i><span className="hidden md:inline">More Info</span></Link>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -286,7 +337,10 @@ export default function Movies() {
                         <button onClick={(e) => { e.stopPropagation(); const obj = { poster: posterUrl || '', title, id }; import('../lib/myList').then(m => { m.toggleFavorite(obj); window.dispatchEvent(new Event('storage')); }); }} className="bg-black bg-opacity-60 p-2 rounded-full hover:bg-opacity-90 text-white" title="Favourite"><i className="fas fa-heart"></i></button>
                       </div>
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                        <button className="play-button bg-cineflix-red text-white px-4 py-2 rounded"><i className="fas fa-play"></i></button>
+                        <div className="flex items-center gap-3">
+                          <button onClick={() => { if (!isLoggedIn) { setLoginModalOpen(true); return; } }} className="play-button bg-cineflix-red text-white px-4 py-2 rounded flex items-center gap-2"><i className="fas fa-play"></i><span className="hidden md:inline">Play</span></button>
+                          <Link to={`/movie/${encodeURIComponent(posterUrl || `award-${i}`)}`} onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); setLoginModalOpen(true); } }} className="bg-white bg-opacity-10 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-opacity-20"><i className="fas fa-info-circle"></i><span className="hidden md:inline">More Info</span></Link>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -315,11 +369,11 @@ export default function Movies() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-3">Help</h4>
+            <h4 className="font-semibold mb-3">Support</h4>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><a href="#" className="hover:text-white">Help Center</a></li>
-              <li><a href="#" className="hover:text-white">Terms</a></li>
-              <li><a href="#" className="hover:text-white">Privacy</a></li>
+              <li><a href="/help" className="hover:text-white">Help Center</a></li>
+              <li><a href="/contact" className="hover:text-white">Contact Us</a></li>
+              <li><a href="/privacy" className="hover:text-white">Privacy & Terms</a></li>
             </ul>
           </div>
 
@@ -345,6 +399,24 @@ export default function Movies() {
           </div>
         </div>
       </footer>
+      {loginModalOpen && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[9998]">
+          <div className="bg-cineflix-dark rounded-lg max-w-md w-full p-6 relative z-50">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-white">Sign in to CineFlix</h3>
+              <button onClick={() => setLoginModalOpen(false)} className="text-gray-300">Close</button>
+            </div>
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <input value={loginForm.username} onChange={(e) => setLoginForm(f => ({ ...f, username: e.target.value }))} placeholder="Username" className="w-full px-3 py-2 rounded bg-gray-800 text-white" />
+              <input type="password" value={loginForm.password} onChange={(e) => setLoginForm(f => ({ ...f, password: e.target.value }))} placeholder="Password" className="w-full px-3 py-2 rounded bg-gray-800 text-white" />
+              <div className="flex justify-end space-x-2">
+                <button type="button" onClick={() => setLoginModalOpen(false)} className="px-4 py-2 border rounded text-gray-200">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-cineflix-red text-white rounded">Sign In</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
