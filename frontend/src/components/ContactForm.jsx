@@ -108,7 +108,7 @@ const ContactForm = ({ onSubmit }) => {
         category: formData.category
       };
 
-      const res = await fetch('http://localhost:8080/api/contact', {
+      const res = await fetch('http://localhost:8082/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

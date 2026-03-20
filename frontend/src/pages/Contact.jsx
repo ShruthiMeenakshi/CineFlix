@@ -5,7 +5,8 @@ import ContactInfo from '../components/ContactInfo';
 import ContactMap from '../components/ContactMap';
 import ContactFAQ from '../components/ContactFAQ';
 import ContactSuccessModal from '../components/ContactSuccessModal';
-import { FiMail, FiMapPin, FiPhone, FiClock, FiMessageCircle, FiHelpCircle } from 'react-icons/fi';
+import { FiMail, FiMapPin, FiPhone, FiClock, FiMessageCircle, FiHelpCircle, FiArrowLeft } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 const Contact = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -30,6 +31,12 @@ const Contact = () => {
             transition={{ duration: 0.6 }}
             className="text-center max-w-3xl mx-auto"
           >
+            <div className="mb-4 text-left">
+              <Link to="/" className="inline-flex items-center gap-2 text-gray-300 hover:text-white">
+                <FiArrowLeft className="w-4 h-4" />
+                Back
+              </Link>
+            </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
               <span className="text-gradient">Get in</span>{' '}
               <span className="text-white">Touch</span>
