@@ -60,6 +60,17 @@ export default function Notifications() {
   }, []);
 
   useEffect(() => {
+    function handleSystemNotice(e) {
+      const d = (e && e.detail) || {};
+      const note = { id: `system:${Date.now()}`, title: d.title || 'Notification', poster: '', category: 'system', ts: Date.now(), data: d, read: false };
+      setItems(prev => [note, ...prev].slice(0, 50));
+    }
+
+    window.addEventListener('notify:add', handleSystemNotice);
+    return () => window.removeEventListener('notify:add', handleSystemNotice);
+  }, []);
+
+  useEffect(() => {
     function onClick(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setOpen(false);
     }
@@ -105,7 +116,11 @@ export default function Notifications() {
               <div key={n.id} className={`p-3 flex items-start gap-3 hover:bg-black/20 cursor-pointer ${n.read ? 'opacity-70' : ''}`} onClick={() => goToMovie(n)}>
                 {n.poster ? <img src={n.poster} alt={n.title} className="w-10 h-14 object-cover rounded" /> : <div className="w-10 h-14 bg-gray-800 rounded" />}
                 <div className="flex-1">
-                  <div className="text-sm font-semibold">{n.category === 'profile' ? n.title : `${n.title} added to ${n.category === 'favorite' ? 'Favourites' : 'Wishlist'}`}</div>
+                  <div className="text-sm font-semibold">
+                    {n.category === 'profile' || n.category === 'system'
+                      ? n.title
+                      : `${n.title} added to ${n.category === 'favorite' ? 'Favourites' : 'Wishlist'}`}
+                  </div>
                   <div className="text-xs text-gray-400 mt-1">{timeAgo(n.ts)} ago</div>
                 </div>
               </div>

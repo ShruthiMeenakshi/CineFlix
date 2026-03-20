@@ -1,7 +1,6 @@
 package com.netflixclone.api.controller;
 
 import com.netflixclone.api.model.ContactUs;
-import com.netflixclone.api.repository.ContactUsRepository;
 import com.netflixclone.api.service.ContactService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,5 +1,6 @@
 package com.netflixclone.api.controller;
 
+import com.netflixclone.api.model.User;
 import com.netflixclone.api.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.Map;
 
 @RestController
@@ -21,6 +23,26 @@ public class AuthController {
         this.authService = authService;
     }
 
+    record SignupRequest(String username, String email, String password) {}
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
+        try {
+            User saved = authService.register(req.username(), req.email(), req.password());
+            // hide password before returning
+            saved.setPassword(null);
+            URI location = URI.create("/api/auth/users/" + (saved.getId() == null ? "" : saved.getId()));
+            return ResponseEntity.created(location).body(saved);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "invalid_payload"));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Signup failed: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "server_error"));
+        }
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         String username = body.get("username");
@@ -32,26 +54,6 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("token", token, "username", username));
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody Map<String, String> body) {
-        String username = body.get("username");
-        String password = body.get("password");
-        try {
-            String token = authService.register(username, password);
-            if (token == null) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "User exists or invalid input"));
-            }
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("token", token, "username", username));
-        } catch (Exception e) {
-            log.error("Signup failed for {}: {}", username, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Signup failed", "message", e.getMessage()));
-        }
-    }
-    @GetMapping("/test")
-public Map<String, String> test() {
-    return Map.of("message", "Auth controller working");
-}
-
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader(value = "Authorization", required = false) String auth) {
         if (auth != null && auth.startsWith("Bearer ")) {
@@ -59,5 +61,10 @@ public Map<String, String> test() {
             authService.revokeToken(token);
         }
         return ResponseEntity.ok(Map.of("status", "logged out"));
+    }
+
+    @GetMapping("/test")
+    public Map<String, String> test() {
+        return Map.of("message", "Auth controller working");
     }
 }

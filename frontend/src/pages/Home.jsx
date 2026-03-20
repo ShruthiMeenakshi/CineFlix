@@ -22,14 +22,17 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
-  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+  const [loginForm, setLoginForm] = useState({ username: '', password: '', email: '', confirmPassword: '' });
+  const [authMode, setAuthMode] = useState('signin'); // 'signin' or 'signup'
+  const [authStatus, setAuthStatus] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     document.title = 'CineFlix - Home';
     // load curated OMDB movies for the featured grids
     let mounted = true;
     async function loadCurated() {
-      const queries = ['Avengers','Batman','Inception','Matrix','Star Wars','Lord of the Rings','Harry Potter','Jurassic Park','Titanic','Interstellar'];
+      const queries = ['Avengers', 'Batman', 'Inception', 'Matrix', 'Star Wars', 'Lord of the Rings', 'Harry Potter', 'Jurassic Park', 'Titanic', 'Interstellar'];
       const collected = [];
       const seen = new Set();
       try {
@@ -143,24 +146,91 @@ export default function Home() {
 
   function handleLoginSubmit(e) {
     e.preventDefault();
-    const uname = (loginForm.username || '').trim();
-    if (!uname) {
-      setSearchStatus('Please enter a username to login.');
-      return;
+    console.log('handleLoginSubmit', authMode, loginForm);
+    setAuthStatus('');
+    if (authMode === 'signin') {
+      const uname = (loginForm.username || '').trim();
+      const pwd = loginForm.password || '';
+      if (!uname) { setAuthStatus('Please enter a username to login.'); return; }
+      if (!pwd) { setAuthStatus('Please enter a password to login.'); return; }
+
+      (async () => {
+        setAuthStatus('Signing in...');
+        try {
+          const res = await fetch('http://localhost:8082/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: uname, password: pwd }),
+          });
+
+          if (res.ok) {
+            const data = await res.json().catch(() => ({}));
+            const userObj = { username: data.username || uname };
+            localStorage.setItem('cineflix_user', JSON.stringify(userObj));
+            setUser(userObj);
+            setIsLoggedIn(true);
+            setLoginModalOpen(false);
+            setSearchStatus('');
+            setAuthStatus('');
+          } else {
+            const err = await res.json().catch(() => ({}));
+            setAuthStatus(err.error || err.message || 'Invalid credentials.');
+          }
+        } catch (err) {
+          setAuthStatus('Login failed. Please try again.');
+        }
+      })();
+    } else {
+      // signup
+      const uname = (loginForm.username || '').trim();
+      const email = (loginForm.email || '').trim();
+      const pwd = loginForm.password || '';
+      const confirm = loginForm.confirmPassword || '';
+      if (!uname || !email || !pwd) { setAuthStatus('Please complete all signup fields.'); return; }
+      if (pwd.length < 6) { setAuthStatus('Password must be at least 6 characters.'); return; }
+      if (pwd !== confirm) { setAuthStatus('Passwords do not match.'); return; }
+
+      // attempt server signup (MongoDB-backed)
+      (async () => {
+          setAuthStatus('Submitting...');
+          try {
+            console.log('signup submit', { uname, email });
+          const res = await fetch('http://localhost:8082/api/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: uname, email, password: pwd }),
+          });
+          if (res.status === 201) {
+            const saved = await res.json().catch(() => null);
+            const userObj = saved && saved.username ? { username: saved.username, email: saved.email } : { username: uname, email };
+            localStorage.setItem('cineflix_user', JSON.stringify(userObj));
+            setUser(userObj);
+            setIsLoggedIn(true);
+            setLoginModalOpen(false);
+            setSearchStatus('Account created.');
+            window.dispatchEvent(new CustomEvent('notify:add', { detail: { title: 'Account created', category: 'system' } }));
+          } else if (res.status === 409) {
+            const err = await res.json().catch(() => ({}));
+            setSearchStatus(err.error || err.message || 'Username or email already exists.');
+          } else {
+            const err = await res.json().catch(() => ({}));
+            setSearchStatus(err.error || err.message || `Signup failed (status ${res.status}).`);
+          }
+        } catch (err) {
+          setSearchStatus('Signup failed. Please try again.');
+        }
+      })();
     }
-    // simple mock login: persist username locally
-    const u = { username: uname };
-    localStorage.setItem('cineflix_user', JSON.stringify(u));
-    setUser(u);
-    setIsLoggedIn(true);
-    setLoginModalOpen(false);
-    setSearchStatus('');
   }
 
   function handleLogout() {
     localStorage.removeItem('cineflix_user');
     setUser(null);
     setIsLoggedIn(false);
+    setAuthMode('signin');
+    setAuthStatus('');
+    setLoginForm({ username: '', password: '', email: '', confirmPassword: '' });
+    setLoginModalOpen(true);
   }
 
   function renderMovieCard(movie) {
@@ -206,7 +276,7 @@ export default function Home() {
             <Link to="/list" className="hover:text-gray-300">My List</Link>
           </div>
         </div>
-          <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4">
           <div className="hidden md:flex items-center bg-cineflix-gray/70 rounded px-3 py-1.5">
             <i className="fas fa-search text-gray-300 mr-2"></i>
             <input value={navbarQuery} onChange={(e) => setNavbarQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { setQuery(navbarQuery); searchMovies(navbarQuery, 1); } }} id="navbarSearchInput" type="text" placeholder="Search movies..." className="bg-transparent text-sm focus:outline-none w-48" />
@@ -265,7 +335,7 @@ export default function Home() {
         <div className="mb-8">
           <h2 className="text-xl font-bold mb-4">Popular on CineFlix</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-            {(curatedMovies.length ? curatedMovies.slice(0,6) : Array.from({length:6})).map((m, idx) => (
+            {(curatedMovies.length ? curatedMovies.slice(0, 6) : Array.from({ length: 6 })).map((m, idx) => (
               m && m.imdbID ? renderMovieCard(m) : (
                 <div key={`pop-${idx}`} className="group relative rounded overflow-hidden">
                   <div className="w-full h-40 bg-gray-800 animate-pulse"></div>
@@ -278,7 +348,7 @@ export default function Home() {
         <div className="mb-8">
           <h2 className="text-xl font-bold mb-4">Trending Now</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-            {(curatedMovies.length ? curatedMovies.slice(6,12) : Array.from({length:6})).map((m, idx) => (
+            {(curatedMovies.length ? curatedMovies.slice(6, 12) : Array.from({ length: 6 })).map((m, idx) => (
               m && m.imdbID ? renderMovieCard(m) : (
                 <div key={`trend-${idx}`} className="group relative rounded overflow-hidden">
                   <div className="w-full h-40 bg-gray-800 animate-pulse"></div>
@@ -291,7 +361,7 @@ export default function Home() {
         <div className="mb-8">
           <h2 className="text-xl font-bold mb-4">Continue Watching</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-            {(curatedMovies.length ? curatedMovies.slice(12,18) : Array.from({length:6})).map((m, idx) => (
+            {(curatedMovies.length ? curatedMovies.slice(12, 18) : Array.from({ length: 6 })).map((m, idx) => (
               m && m.imdbID ? (
                 <div key={m.imdbID}>{renderMovieCard(m)}</div>
               ) : (
@@ -302,7 +372,6 @@ export default function Home() {
             ))}
           </div>
         </div>
-
       </section>
 
       {/* Footer */}
@@ -357,43 +426,60 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Modal */}
-      {loginModalOpen && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[9998]">
-          <div className="bg-cineflix-dark rounded-lg max-w-md w-full p-6 relative z-50">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-white">Sign in to CineFlix</h3>
-              <button onClick={() => setLoginModalOpen(false)} className="text-gray-300">Close</button>
-            </div>
-            <form onSubmit={handleLoginSubmit} className="space-y-4">
-              <input value={loginForm.username} onChange={(e) => setLoginForm(f => ({ ...f, username: e.target.value }))} placeholder="Username" className="w-full px-3 py-2 rounded bg-gray-800 text-white" />
-              <input type="password" value={loginForm.password} onChange={(e) => setLoginForm(f => ({ ...f, password: e.target.value }))} placeholder="Password" className="w-full px-3 py-2 rounded bg-gray-800 text-white" />
-              <div className="flex justify-end space-x-2">
-                <button type="button" onClick={() => setLoginModalOpen(false)} className="px-4 py-2 border rounded text-gray-200">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-cineflix-red text-white rounded">Sign In</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-      {modalOpen && modalData && (
-        <div id="movieModal" className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[9999]">
-          <div className="bg-cineflix-dark rounded-lg max-w-2xl w-full overflow-auto relative z-50">
-            <div className="p-4 flex justify-end"><button onClick={() => setModalOpen(false)} className="text-gray-300">Close</button></div>
-            <div id="modalContent" className="p-4 text-gray-200">
-              <div className="md:flex gap-4">
-                <img src={modalData.Poster && modalData.Poster !== 'N/A' ? modalData.Poster : 'https://via.placeholder.com/300x445?text=No+Poster'} className="w-40 h-auto rounded mb-4 md:mb-0" alt="poster" />
+        {/* Modal */}
+        {loginModalOpen && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[9998]">
+            <div className="bg-cineflix-dark rounded-lg max-w-md w-full p-6 relative z-50">
+              <div className="flex justify-between items-center mb-4">
                 <div>
-                  <h3 className="text-xl font-bold">{modalData.Title} ({modalData.Year})</h3>
-                  <p className="text-sm text-gray-300 mt-2">{modalData.Genre} • {modalData.Runtime}</p>
-                  <p className="mt-3 text-gray-200">{modalData.Plot}</p>
-                  <p className="text-xs text-gray-400 mt-3">IMDB: {modalData.imdbRating} • Votes: {modalData.imdbVotes}</p>
+                  <h3 className="text-lg font-bold text-white">{authMode === 'signin' ? 'Sign in to CineFlix' : 'Create a CineFlix account'}</h3>
+                  <div className="text-sm text-gray-400 mt-1">
+                    {authMode === 'signin' ? 'Access your saved list and personalized recommendations.' : 'Join CineFlix to save your favorites and get recommendations.'}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setAuthMode('signup')} className={`px-3 py-1 rounded ${authMode === 'signup' ? 'bg-white text-black' : 'text-gray-300 hover:text-white'}`}>Sign up</button>
+                  <button onClick={() => setLoginModalOpen(false)} className="text-gray-300">Close</button>
+                </div>
+              </div>
+              <form onSubmit={handleLoginSubmit} className="space-y-4">
+                <input value={loginForm.username} onChange={(e) => setLoginForm(f => ({ ...f, username: e.target.value }))} placeholder="Username" className="w-full px-3 py-2 rounded bg-gray-800 text-white" />
+                {authMode === 'signup' && (
+                  <input value={loginForm.email} onChange={(e) => setLoginForm(f => ({ ...f, email: e.target.value }))} placeholder="Email address" className="w-full px-3 py-2 rounded bg-gray-800 text-white" />
+                )}
+                <input type="password" value={loginForm.password} onChange={(e) => setLoginForm(f => ({ ...f, password: e.target.value }))} placeholder="Password" className="w-full px-3 py-2 rounded bg-gray-800 text-white" />
+                {authMode === 'signup' && (
+                  <input type="password" value={loginForm.confirmPassword} onChange={(e) => setLoginForm(f => ({ ...f, confirmPassword: e.target.value }))} placeholder="Confirm password" className="w-full px-3 py-2 rounded bg-gray-800 text-white" />
+                )}
+                {authStatus && <div className="text-sm text-yellow-300">{authStatus}</div>}
+                <div className="flex justify-end space-x-2">
+                  <button type="button" onClick={() => setLoginModalOpen(false)} className="px-4 py-2 border rounded text-gray-200">Cancel</button>
+                  <button type="submit" disabled={isSubmitting} className={`px-4 py-2 ${isSubmitting ? 'bg-gray-600' : 'bg-cineflix-red'} text-white rounded`}>
+                    {isSubmitting ? (authMode === 'signin' ? 'Signing in...' : 'Creating...') : (authMode === 'signin' ? 'Sign In' : 'Create Account')}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+        {modalOpen && modalData && (
+          <div id="movieModal" className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[9999]">
+            <div className="bg-cineflix-dark rounded-lg max-w-2xl w-full overflow-auto relative z-50">
+              <div className="p-4 flex justify-end"><button onClick={() => setModalOpen(false)} className="text-gray-300">Close</button></div>
+              <div id="modalContent" className="p-4 text-gray-200">
+                <div className="md:flex gap-4">
+                  <img src={modalData.Poster && modalData.Poster !== 'N/A' ? modalData.Poster : 'https://via.placeholder.com/300x445?text=No+Poster'} className="w-40 h-auto rounded mb-4 md:mb-0" alt="poster" />
+                  <div>
+                    <h3 className="text-xl font-bold">{modalData.Title} ({modalData.Year})</h3>
+                    <p className="text-sm text-gray-300 mt-2">{modalData.Genre} • {modalData.Runtime}</p>
+                    <p className="mt-3 text-gray-200">{modalData.Plot}</p>
+                    <p className="text-xs text-gray-400 mt-3">IMDB: {modalData.imdbRating} • Votes: {modalData.imdbVotes}</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 }
