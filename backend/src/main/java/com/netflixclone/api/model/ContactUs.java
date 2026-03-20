@@ -14,6 +14,11 @@ public class ContactUs {
     private String subject;
     private String message;
     private String category;
+    // attachment metadata (optional)
+    private String attachmentFilename;
+    private String attachmentContentType;
+    // store GridFS id (hex string) when file is stored in MongoDB
+    private String attachmentId;
     private Instant createdAt;
 
     public ContactUs() {}
@@ -44,6 +49,15 @@ public class ContactUs {
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
+
+    public String getAttachmentFilename() { return attachmentFilename; }
+    public void setAttachmentFilename(String attachmentFilename) { this.attachmentFilename = attachmentFilename; }
+
+    public String getAttachmentContentType() { return attachmentContentType; }
+    public void setAttachmentContentType(String attachmentContentType) { this.attachmentContentType = attachmentContentType; }
+
+    public String getAttachmentId() { return attachmentId; }
+    public void setAttachmentId(String attachmentId) { this.attachmentId = attachmentId; }
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }

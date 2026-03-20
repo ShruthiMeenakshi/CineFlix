@@ -99,25 +99,30 @@ const ContactForm = ({ onSubmit }) => {
     }
     setIsSubmitting(true);
     try {
-      // send to backend API (no attachments for now)
-      const payload = {
-        name: formData.name,
-        email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-        category: formData.category
-      };
+      // build multipart/form-data payload (supports one attachment)
+      const fd = new FormData();
+      fd.append('name', formData.name);
+      fd.append('email', formData.email);
+      fd.append('subject', formData.subject || '');
+      fd.append('message', formData.message);
+      // map stored category value to the full label expected by backend
+      const selected = categories.find(c => c.value === formData.category);
+      fd.append('category', selected ? selected.label : 'Other');
+
+      if (formData.attachments && formData.attachments.length > 0) {
+        // backend accepts a single file field named `attachment`
+        fd.append('attachment', formData.attachments[0]);
+      }
 
       const res = await fetch('http://localhost:8082/api/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: fd
       });
 
       if (!res.ok) throw new Error('Failed to submit message');
 
       const data = await res.json();
-      onSubmit(data);
+      onSubmit && onSubmit(data);
       setFormData({ name: '', email: '', subject: '', message: '', category: 'general', attachments: [] });
     } catch (err) {
       console.error('Contact submit error', err);
