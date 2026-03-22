@@ -157,7 +157,7 @@ export default function Home() {
       (async () => {
         setAuthStatus('Signing in...');
         try {
-          const res = await fetch('http://localhost:8082/api/auth/login', {
+          const res = await fetch('https://cineflix-2slc.onrender.com/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: uname, password: pwd }),
@@ -195,7 +195,7 @@ export default function Home() {
           setAuthStatus('Submitting...');
           try {
             console.log('signup submit', { uname, email });
-          const res = await fetch('http://localhost:8082/api/auth/signup', {
+          const res = await fetch('https://cineflix-2slc.onrender.com/api/auth/signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: uname, email, password: pwd }),

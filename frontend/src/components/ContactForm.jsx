@@ -114,7 +114,7 @@ const ContactForm = ({ onSubmit }) => {
         fd.append('attachment', formData.attachments[0]);
       }
 
-      const res = await fetch('http://localhost:8082/api/contact', {
+      const res = await fetch('https://cineflix-2slc.onrender.com/api/contact', {
         method: 'POST',
         body: fd
       });
