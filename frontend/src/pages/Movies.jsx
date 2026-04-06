@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { fetchJsonWithCache, prefetchImages } from '../lib/apiCache';
 import { API_BASE_MOVIES as API_BASE, API_URL } from '../lib/config';
 import Notifications from '../components/Notifications.jsx';
+import ProfileAvatar from '../components/ProfileAvatar.jsx';
 
 export default function Movies() {
   useEffect(() => {
@@ -180,7 +181,7 @@ export default function Movies() {
             {isLoggedIn ? (
               <div className="flex items-center space-x-2">
                 <Link to="/profile" aria-label="Go to profile">
-                  <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded" />
+                  <ProfileAvatar />
                 </Link>
                 <div className="hidden md:flex items-center space-x-2">
                   <span className="text-sm text-gray-300">Hi, {user?.username}</span>
