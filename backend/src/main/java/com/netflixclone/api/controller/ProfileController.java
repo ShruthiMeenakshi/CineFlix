@@ -5,7 +5,9 @@ import com.netflixclone.api.service.OmdbService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,6 +44,38 @@ public class ProfileController {
                 "username", user.getUsername(),
                 "email", user.getEmail(),
                 "displayName", user.getDisplayName()
+        ));
+    }
+
+    record ProfileUpdate(String displayName, String email) {}
+
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(
+            @RequestHeader(value = "Authorization", required = false) String auth,
+            @RequestBody ProfileUpdate update) {
+        if (auth == null || !auth.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Missing token"));
+        }
+        String token = auth.substring(7);
+        Optional<User> userOpt = authService.getUserByToken(token);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid token"));
+        }
+        User user = userOpt.get();
+        if (update != null) {
+            if (update.displayName() != null && !update.displayName().isBlank()) {
+                user.setDisplayName(update.displayName().trim());
+            }
+            if (update.email() != null && !update.email().isBlank()) {
+                user.setEmail(update.email().trim());
+            }
+        }
+        User saved = authService.updateUser(user);
+        return ResponseEntity.ok(Map.of(
+            "id", saved.getId(),
+            "username", saved.getUsername(),
+            "email", saved.getEmail(),
+            "displayName", saved.getDisplayName()
         ));
     }
 

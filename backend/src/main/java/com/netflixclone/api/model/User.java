@@ -12,6 +12,14 @@ public class User {
     private String password;
     private String email;
     private String displayName;
+    private boolean notificationsEmail;
+    private boolean notificationsPush;
+    private boolean notificationsMarketing;
+    private boolean autoplay;
+    private String playbackQuality;
+    private java.util.List<String> preferredGenres;
+    private java.util.List<String> preferredLanguages;
+    private String maturityRating;
 
     public User() {}
 
@@ -36,4 +44,28 @@ public class User {
 
     public String getDisplayName() { return displayName; }
     public void setDisplayName(String displayName) { this.displayName = displayName; }
+
+    public boolean isNotificationsEmail() { return notificationsEmail; }
+    public void setNotificationsEmail(boolean notificationsEmail) { this.notificationsEmail = notificationsEmail; }
+
+    public boolean isNotificationsPush() { return notificationsPush; }
+    public void setNotificationsPush(boolean notificationsPush) { this.notificationsPush = notificationsPush; }
+
+    public boolean isNotificationsMarketing() { return notificationsMarketing; }
+    public void setNotificationsMarketing(boolean notificationsMarketing) { this.notificationsMarketing = notificationsMarketing; }
+
+    public boolean isAutoplay() { return autoplay; }
+    public void setAutoplay(boolean autoplay) { this.autoplay = autoplay; }
+
+    public String getPlaybackQuality() { return playbackQuality; }
+    public void setPlaybackQuality(String playbackQuality) { this.playbackQuality = playbackQuality; }
+
+    public java.util.List<String> getPreferredGenres() { return preferredGenres; }
+    public void setPreferredGenres(java.util.List<String> preferredGenres) { this.preferredGenres = preferredGenres; }
+
+    public java.util.List<String> getPreferredLanguages() { return preferredLanguages; }
+    public void setPreferredLanguages(java.util.List<String> preferredLanguages) { this.preferredLanguages = preferredLanguages; }
+
+    public String getMaturityRating() { return maturityRating; }
+    public void setMaturityRating(String maturityRating) { this.maturityRating = maturityRating; }
 }

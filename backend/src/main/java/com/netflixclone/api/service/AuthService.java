@@ -35,6 +35,14 @@ public class AuthService {
         u.setEmail(email);
         u.setPassword(encoder.encode(password));
         u.setDisplayName(username);
+        u.setNotificationsEmail(true);
+        u.setNotificationsPush(false);
+        u.setNotificationsMarketing(false);
+        u.setAutoplay(true);
+        u.setPlaybackQuality("Auto");
+        u.setPreferredGenres(java.util.List.of());
+        u.setPreferredLanguages(java.util.List.of("English"));
+        u.setMaturityRating("PG-13");
 
         return userRepository.save(u);
     }
@@ -70,5 +78,9 @@ public class AuthService {
 
     public void revokeToken(String token) {
         tokens.remove(token);
+    }
+
+    public User updateUser(User user) {
+        return userRepository.save(user);
     }
 }
