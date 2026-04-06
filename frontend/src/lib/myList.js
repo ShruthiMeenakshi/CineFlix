@@ -27,6 +27,7 @@ function normalize(movie) {
     poster: movie.Poster || movie.poster || movie.image || '',
     year: movie.Year || movie.year || '',
     type: movie.Type || movie.type || '',
+    addedAt: movie.addedAt || Date.now(),
   };
 }
 

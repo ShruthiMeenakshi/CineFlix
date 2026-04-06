@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchJsonWithCache, prefetchImages } from '../lib/apiCache';
 import Notifications from '../components/Notifications.jsx';
-import { API_BASE_MOVIES as API_BASE } from '../lib/config';
+import { API_BASE_MOVIES as API_BASE, API_URL } from '../lib/config';
 
 export default function Tvshows() {
   const [posters, setPosters] = useState([]);
@@ -41,19 +41,35 @@ export default function Tvshows() {
     } catch (e) { setUser(null); setIsLoggedIn(false); }
   }, []);
 
-  function handleLoginSubmit(e) {
+  async function handleLoginSubmit(e) {
     e.preventDefault();
     const uname = (loginForm.username || '').trim();
-    if (!uname) return;
-    const u = { username: uname };
-    localStorage.setItem('cineflix_user', JSON.stringify(u));
-    setUser(u);
-    setIsLoggedIn(true);
-    setLoginModalOpen(false);
+    const pwd = loginForm.password || '';
+    if (!uname || !pwd) return;
+    try {
+      const res = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: uname, password: pwd }),
+      });
+      if (!res.ok) return;
+      const data = await res.json().catch(() => ({}));
+      const u = { username: data.username || uname };
+      localStorage.setItem('cineflix_user', JSON.stringify(u));
+      if (data.token) {
+        localStorage.setItem('cineflix_token', data.token);
+      }
+      setUser(u);
+      setIsLoggedIn(true);
+      setLoginModalOpen(false);
+    } catch (e) {
+      // ignore
+    }
   }
 
   function handleLogout() {
     localStorage.removeItem('cineflix_user');
+    localStorage.removeItem('cineflix_token');
     setUser(null);
     setIsLoggedIn(false);
     window.dispatchEvent(new Event('storage'));
@@ -106,7 +122,9 @@ export default function Tvshows() {
           <div className="flex items-center space-x-2">
             {isLoggedIn ? (
               <div className="flex items-center space-x-2">
-                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded" />
+                <Link to="/profile" aria-label="Go to profile">
+                  <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded" />
+                </Link>
                 <div className="hidden md:flex items-center space-x-2">
                   <span className="text-sm text-gray-300">Hi, {user?.username}</span>
                   <button onClick={handleLogout} className="text-gray-300 hover:text-white" title="Logout"><i className="fas fa-sign-out-alt"></i></button>

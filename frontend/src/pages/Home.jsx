@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Notifications from '../components/Notifications.jsx';
 import { Link } from 'react-router-dom';
-import { API_BASE_MOVIES } from '../lib/config';
+import { API_BASE_MOVIES, API_URL } from '../lib/config';
 import { toggleFavorite, toggleWishlist, isFavorite, isWishlisted } from '../lib/myList';
 
 const API_BASE_URL = API_BASE_MOVIES;
@@ -157,7 +157,7 @@ export default function Home() {
       (async () => {
         setAuthStatus('Signing in...');
         try {
-          const res = await fetch('https://cineflix-2slc.onrender.com/api/auth/login', {
+          const res = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: uname, password: pwd }),
@@ -167,6 +167,9 @@ export default function Home() {
             const data = await res.json().catch(() => ({}));
             const userObj = { username: data.username || uname };
             localStorage.setItem('cineflix_user', JSON.stringify(userObj));
+            if (data.token) {
+              localStorage.setItem('cineflix_token', data.token);
+            }
             setUser(userObj);
             setIsLoggedIn(true);
             setLoginModalOpen(false);
@@ -195,7 +198,7 @@ export default function Home() {
           setAuthStatus('Submitting...');
           try {
             console.log('signup submit', { uname, email });
-          const res = await fetch('https://cineflix-2slc.onrender.com/api/auth/signup', {
+          const res = await fetch(`${API_URL}/auth/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: uname, email, password: pwd }),
@@ -209,6 +212,21 @@ export default function Home() {
             setLoginModalOpen(false);
             setSearchStatus('Account created.');
             window.dispatchEvent(new CustomEvent('notify:add', { detail: { title: 'Account created', category: 'system' } }));
+            try {
+              const loginRes = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: uname, password: pwd }),
+              });
+              if (loginRes.ok) {
+                const loginData = await loginRes.json().catch(() => ({}));
+                if (loginData.token) {
+                  localStorage.setItem('cineflix_token', loginData.token);
+                }
+              }
+            } catch (e) {
+              // ignore auto-login failure
+            }
           } else if (res.status === 409) {
             const err = await res.json().catch(() => ({}));
             setSearchStatus(err.error || err.message || 'Username or email already exists.');
@@ -225,6 +243,7 @@ export default function Home() {
 
   function handleLogout() {
     localStorage.removeItem('cineflix_user');
+    localStorage.removeItem('cineflix_token');
     setUser(null);
     setIsLoggedIn(false);
     setAuthMode('signin');
@@ -285,7 +304,9 @@ export default function Home() {
           <div className="flex items-center space-x-2">
             {isLoggedIn ? (
               <div className="flex items-center space-x-2">
-                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded" />
+                <Link to="/profile" aria-label="Go to profile">
+                  <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded" />
+                </Link>
                 <div className="hidden md:flex items-center space-x-2">
                   <span className="text-sm text-gray-300">Hi, {user?.username}</span>
                   <button onClick={handleLogout} className="text-gray-300 hover:text-white" title="Logout"><i className="fas fa-sign-out-alt"></i></button>

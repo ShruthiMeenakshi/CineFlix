@@ -8,6 +8,10 @@ import MovieDetails from './pages/MovieDetails.jsx';
 import Tvshows from './pages/Tvshows.jsx';
 import MyList from './pages/MyList.jsx';
 import Profile from './pages/Profile.jsx';
+import SettingsEditProfile from './pages/SettingsEditProfile.jsx';
+import SettingsNotifications from './pages/SettingsNotifications.jsx';
+import SettingsPlayback from './pages/SettingsPlayback.jsx';
+import SettingsPreferences from './pages/SettingsPreferences.jsx';
 import Help from './pages/Help.jsx';
 import Contact from './pages/Contact.jsx';
 import Privacy from './pages/Privacy.jsx';
@@ -34,6 +38,10 @@ export default function App() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/list" element={<MyList />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/settings/edit-profile" element={<SettingsEditProfile />} />
+        <Route path="/settings/notifications" element={<SettingsNotifications />} />
+        <Route path="/settings/playback" element={<SettingsPlayback />} />
+        <Route path="/settings/preferences" element={<SettingsPreferences />} />
       </Routes>
       <Analytics />
     </div>

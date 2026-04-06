@@ -133,7 +133,9 @@ export default function MyList() {
           <div className="flex items-center space-x-2">
             {isLoggedIn ? (
               <div className="flex items-center space-x-2 cursor-pointer group">
-                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-cineflix-red" />
+                <Link to="/profile" aria-label="Go to profile">
+                  <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-8 h-8 rounded transition-transform duration-300 group-hover:ring-2 group-hover:ring-cineflix-red" />
+                </Link>
                 <div className="hidden md:flex items-center space-x-2">
                   <span className="text-sm text-gray-300">Hi, {user?.username}</span>
                   <button onClick={() => { localStorage.removeItem('cineflix_user'); setUser(null); setIsLoggedIn(false); window.dispatchEvent(new Event('storage')); }} className="text-gray-300 hover:text-white" title="Logout"><i className="fas fa-sign-out-alt"></i></button>

@@ -1,0 +1,61 @@
+@startuml
+
+' ========== ENTITIES ==========
+class Movie {
+  - id : Long
+  - title : String
+  - genre : String
+  - year : int
+  - posterUrl : String
+}
+
+class User {
+  - id : Long
+  - username : String
+  - email : String
+  - password : String
+}
+
+' ========== CONTROLLERS ==========
+class MovieController {
+  + getAllMovies()
+  + getMovieById(id)
+}
+
+class AuthController {
+  + login()
+  + register()
+}
+
+' ========== SERVICES ==========
+class MovieService {
+  + fetchMovies()
+  + fetchMovieById(id)
+}
+
+class AuthService {
+  + authenticate()
+  + createUser()
+}
+
+' ========== REPOSITORIES ==========
+class MovieRepository {
+  + findAll()
+  + findById(id)
+}
+
+class UserRepository {
+  + findByUsername()
+  + save()
+}
+
+' ========== RELATIONSHIPS ==========
+MovieController --> MovieService
+MovieService --> MovieRepository
+
+AuthController --> AuthService
+AuthService --> UserRepository
+
+User --> Movie : watches >
+
+@enduml

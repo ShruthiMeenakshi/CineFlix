@@ -57,6 +57,17 @@ public class AuthService {
         return tokens.get(token);
     }
 
+    public Optional<User> getUserByToken(String token) {
+        if (token == null || token.isBlank()) {
+            return Optional.empty();
+        }
+        String username = tokens.get(token);
+        if (username == null) {
+            return Optional.empty();
+        }
+        return userRepository.findByUsername(username);
+    }
+
     public void revokeToken(String token) {
         tokens.remove(token);
     }

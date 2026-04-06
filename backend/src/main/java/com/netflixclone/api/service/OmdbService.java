@@ -142,6 +142,57 @@ public class OmdbService {
         return posters;
     }
 
+    public List<java.util.Map<String, String>> getRecommendations(int count) {
+        List<java.util.Map<String, String>> items = new ArrayList<>();
+
+        List<String> keywords = Arrays.asList(
+                "avengers", "batman", "matrix", "inception", "harry potter", "terminator",
+                "alien", "star wars", "lord of the rings", "spider-man", "joker", "toy story",
+                "up", "parasite", "gladiator", "shawshank", "fight club", "interstellar"
+        );
+
+        Random rnd = new Random();
+        int attempts = 0;
+
+        while (items.size() < count && attempts < count * 8) {
+            attempts++;
+            String kw = keywords.get(rnd.nextInt(keywords.size()));
+            int page = 1 + rnd.nextInt(3);
+
+            try {
+                String json = searchMovies(kw, page, null, null);
+                JsonNode root = mapper.readTree(json);
+                if (root.has("Search")) {
+                    for (JsonNode item : root.get("Search")) {
+                        if (items.size() >= count) {
+                            break;
+                        }
+
+                        String title = item.has("Title") ? item.get("Title").asText() : null;
+                        String year = item.has("Year") ? item.get("Year").asText() : "";
+                        String imdbId = item.has("imdbID") ? item.get("imdbID").asText() : "";
+                        String poster = item.has("Poster") ? item.get("Poster").asText() : "";
+                        String type = item.has("Type") ? item.get("Type").asText() : "movie";
+
+                        if (title != null && !title.isBlank() && poster != null && !"N/A".equalsIgnoreCase(poster)) {
+                            items.add(java.util.Map.of(
+                                    "title", title,
+                                    "year", year,
+                                    "imdbId", imdbId,
+                                    "poster", poster,
+                                    "type", type
+                            ));
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Ignoring recommendation error for keyword " + kw + " page " + page + ": " + e.getMessage());
+            }
+        }
+
+        return items;
+    }
+
     private boolean isUrlAccessible(String url) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
