@@ -27,6 +27,9 @@ export default function Home() {
   const [authMode, setAuthMode] = useState('signin'); // 'signin' or 'signup'
   const [authStatus, setAuthStatus] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [subscribeEmail, setSubscribeEmail] = useState('');
+  const [subscribeStatus, setSubscribeStatus] = useState('');
+  const [subscribeLoading, setSubscribeLoading] = useState(false);
 
   useEffect(() => {
     document.title = 'CineFlix - Home';
@@ -253,6 +256,37 @@ export default function Home() {
     setLoginModalOpen(true);
   }
 
+  async function handleSubscribeSubmit(e) {
+    e.preventDefault();
+    const email = subscribeEmail.trim();
+    if (!email || !email.includes('@')) {
+      setSubscribeStatus('Please enter a valid email address.');
+      return;
+    }
+
+    setSubscribeLoading(true);
+    setSubscribeStatus('Sending thank you email...');
+    try {
+      const res = await fetch(`${API_URL}/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.ok) {
+        setSubscribeStatus('Thanks for subscribing! Please check your inbox.');
+        setSubscribeEmail('');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        setSubscribeStatus(err.error || err.message || 'Subscription failed. Please try again.');
+      }
+    } catch (err) {
+      setSubscribeStatus('Subscription failed. Please try again.');
+    } finally {
+      setSubscribeLoading(false);
+    }
+  }
+
   function renderMovieCard(movie) {
     const poster = movie.Poster && movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x445?text=No+Poster';
     const id = movie.imdbID;
@@ -426,10 +460,21 @@ export default function Home() {
           <div>
             <h4 className="font-semibold mb-3">Stay in the loop</h4>
             <p className="text-sm text-gray-400 mb-3">Subscribe for updates and recommendations.</p>
-            <form onSubmit={(e)=>{e.preventDefault(); setSearchStatus('Subscribed!');}} className="flex gap-2">
-              <input type="email" placeholder="Email address" className="flex-1 px-3 py-2 rounded bg-gray-800 text-white text-sm" />
-              <button className="bg-cineflix-red px-4 py-2 rounded text-white text-sm">Subscribe</button>
+            <form onSubmit={handleSubscribeSubmit} className="flex gap-2">
+              <input
+                type="email"
+                value={subscribeEmail}
+                onChange={(e) => setSubscribeEmail(e.target.value)}
+                placeholder="Email address"
+                className="flex-1 px-3 py-2 rounded bg-gray-800 text-white text-sm"
+              />
+              <button disabled={subscribeLoading} className="bg-cineflix-red px-4 py-2 rounded text-white text-sm">
+                {subscribeLoading ? 'Sending...' : 'Subscribe'}
+              </button>
             </form>
+            {subscribeStatus && (
+              <div className="text-xs text-gray-400 mt-2">{subscribeStatus}</div>
+            )}
             <div className="flex items-center space-x-3 mt-4">
               <a href="#" className="text-gray-300 hover:text-white"><i className="fab fa-facebook text-2xl"></i></a>
               <a href="#" className="text-gray-300 hover:text-white"><i className="fab fa-instagram text-2xl"></i></a>
