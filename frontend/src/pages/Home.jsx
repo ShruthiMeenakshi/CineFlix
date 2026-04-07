@@ -460,7 +460,12 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => setAuthMode('signup')} className={`px-3 py-1 rounded ${authMode === 'signup' ? 'bg-white text-black' : 'text-gray-300 hover:text-white'}`}>Sign up</button>
+                  {authMode === 'signin' && (
+                    <button onClick={() => setAuthMode('signup')} className="px-3 py-1 text-nowrap rounded text-gray-300 hover:text-white">Sign up</button>
+                  )}
+                  {authMode === 'signup' && (
+                    <button onClick={() => setAuthMode('signin')} className="px-3 py-1 text-nowrap rounded text-gray-300 hover:text-white">Sign in</button>
+                  )}
                   <button onClick={() => setLoginModalOpen(false)} className="text-gray-300">Close</button>
                 </div>
               </div>
