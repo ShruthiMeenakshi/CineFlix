@@ -274,7 +274,7 @@ export default function Home() {
       });
 
       if (res.ok) {
-        setSubscribeStatus('Thanks for subscribing! Please check your inbox.');
+        setSubscribeStatus('Thanks for subscribing! You are on the list.');
         setSubscribeEmail('');
       } else {
         const err = await res.json().catch(() => ({}));

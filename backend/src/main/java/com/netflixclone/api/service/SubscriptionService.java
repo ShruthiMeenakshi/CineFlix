@@ -1,39 +1,33 @@
 package com.netflixclone.api.service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import com.netflixclone.api.model.Subscription;
+import com.netflixclone.api.repository.SubscriptionRepository;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SubscriptionService {
 
-    private final JavaMailSender mailSender;
-    private final String fromAddress;
+    private final SubscriptionRepository subscriptionRepository;
 
-    public SubscriptionService(
-            JavaMailSender mailSender,
-            @Value("${spring.mail.from:no-reply@cineflix.local}") String fromAddress
-    ) {
-        this.mailSender = mailSender;
-        this.fromAddress = fromAddress;
+    public SubscriptionService(SubscriptionRepository subscriptionRepository) {
+        this.subscriptionRepository = subscriptionRepository;
     }
 
-    public void sendThankYou(String toEmail) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setFrom(fromAddress);
-        message.setSubject("Thanks for subscribing to CineFlix");
-        message.setText(buildBody(toEmail));
-        mailSender.send(message);
+    public boolean register(String toEmail) {
+        if (subscriptionRepository.existsByEmail(toEmail)) {
+            return false;
+        }
+        Subscription subscription = new Subscription(toEmail);
+        subscriptionRepository.save(subscription);
+        return true;
     }
 
-    private String buildBody(String email) {
-        return "Hi,\n\n"
-                + "Thanks for subscribing to CineFlix. You are now on the list for updates,"
-                + " new releases, and personalized recommendations.\n\n"
-                + "If you did not request this, you can ignore this email.\n\n"
-                + "Cheers,\n"
-                + "The CineFlix Team\n";
+    public List<Subscription> listSubscriptions() {
+        return subscriptionRepository.findAll();
+    }
+
+    public long countSubscriptions() {
+        return subscriptionRepository.count();
     }
 }
